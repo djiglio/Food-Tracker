@@ -23,14 +23,20 @@ export const NumpadInput: React.FC<NumpadInputProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [tempValue, setTempValue] = useState(value?.toString() || '');
 
+  // Sincronizza il valore dal parent solo quando il tastierino è chiuso,
+  // così possiamo mantenere stringhe temporanee come "70." o "" senza che il parent le distrugga con parseFloat
   useEffect(() => {
-    if (isOpen) {
+    if (!isOpen) {
       setTempValue(value?.toString() || '');
     }
-  }, [isOpen, value]);
+  }, [value, isOpen]);
+
+  const handleChange = (val: string) => {
+    setTempValue(val);
+    onChange(val); // FIRE LIVE! Aggiorna l'interfaccia dell'app in tempo reale
+  };
 
   const handleConfirm = () => {
-    onChange(tempValue);
     setIsOpen(false);
   };
 
@@ -81,7 +87,7 @@ export const NumpadInput: React.FC<NumpadInputProps> = ({
             <div className="mb-6">
               <CustomNumpad 
                 value={tempValue} 
-                onChange={setTempValue} 
+                onChange={handleChange} 
                 maxLength={8} 
               />
             </div>
