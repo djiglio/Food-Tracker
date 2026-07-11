@@ -53,6 +53,7 @@ export const NumpadInput: React.FC<NumpadInputProps> = ({
         <BaseInput 
           {...rest}
           readOnly 
+          inputMode="none"
           value={value} 
           placeholder={placeholder} 
           className={`cursor-pointer ${className || ''}`}
