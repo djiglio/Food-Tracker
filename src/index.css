@@ -16,15 +16,6 @@
 
 @layer utilities {
   /* Utility per safe area in PWA mobile */
-  .pb-safe {
-    padding-bottom: 0px;
-  }
-  .pt-safe {
-    padding-top: max(env(safe-area-inset-top), 1rem);
-  }
-  .pt-safe-header {
-    padding-top: max(env(safe-area-inset-top), 0.75rem);
-  }
   .pb-safe-overlay {
     padding-bottom: 1.5rem;
   }

@@ -38,7 +38,7 @@ export const ProfileDashboard: React.FC = () => {
   const { dailyTarget, meals, goal } = activeTarget;
 
   return (
-    <div className="p-4 space-y-6 pb-8 pt-safe">
+    <div className="p-4 space-y-6 pb-8" style={{ paddingTop: 'max(env(safe-area-inset-top), 16px)' }}>
       <header className="mb-2">
         <h1 className="text-2xl font-bold tracking-tight">Profilo & Obiettivi</h1>
         <p className="text-zinc-400 text-sm">Dashboard metabolica in tempo reale.</p>

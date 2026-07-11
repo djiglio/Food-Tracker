@@ -126,7 +126,7 @@ export const SearchDashboard: React.FC = () => {
     <div className="flex flex-col min-h-full bg-zinc-950">
       
       {/* Header Ricerca Fissato */}
-      <div className="sticky top-0 z-40 bg-zinc-950/90 backdrop-blur-xl border-b border-zinc-900 px-4 pb-3 pt-safe-header space-y-4">
+      <div className="sticky top-0 z-40 bg-zinc-950/90 backdrop-blur-xl border-b border-zinc-900 px-4 pb-3 space-y-4" style={{ paddingTop: 'max(env(safe-area-inset-top), 16px)' }}>
         <div className="flex items-center gap-3">
           <button onClick={() => navigate(-1)} className="p-2 text-zinc-400 hover:text-white active:scale-95 bg-zinc-900 rounded-full shrink-0">
             <ArrowLeft size={20} />

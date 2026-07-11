@@ -73,7 +73,7 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onScan, onClose 
   return (
     <div className="fixed inset-0 z-[150] bg-black flex flex-col animate-in fade-in duration-300">
       {/* Header Assoluto */}
-      <div className="absolute top-0 left-0 right-0 z-10 p-4 pt-safe flex justify-between items-center bg-gradient-to-b from-black/80 to-transparent">
+      <div className="absolute top-0 left-0 right-0 z-10 p-4 flex justify-between items-center bg-gradient-to-b from-black/80 to-transparent" style={{ paddingTop: 'max(env(safe-area-inset-top), 16px)' }}>
         <h2 className="text-white font-bold text-lg tracking-tight drop-shadow-md">Scanner Alimenti</h2>
         <button onClick={onClose} className="p-2 bg-zinc-900/50 backdrop-blur-md rounded-full text-white active:scale-95 transition-all border border-zinc-700">
           <X size={20} />
