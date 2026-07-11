@@ -15,7 +15,7 @@ import MacroCyclingDashboard from './features/metabolic-engine/MacroCyclingDashb
 import ShoppingListDashboard from './features/analytics/ShoppingListDashboard';
 
 const DummyPage = ({ title }: { title: string }) => (
-  <div className="p-4" style={{ paddingTop: 'max(env(safe-area-inset-top), 16px)' }}>
+  <div className="p-4 pt-safe">
     <h1 className="text-2xl font-bold mb-4">{title}</h1>
     <div className="h-64 bg-zinc-900 rounded-3xl border border-zinc-800 flex items-center justify-center text-zinc-500">
       Modulo in costruzione

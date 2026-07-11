@@ -21,7 +21,7 @@ const Layout: React.FC = () => {
 
   return (
     <div className="flex flex-col h-[100dvh] bg-zinc-950 text-zinc-50 overflow-hidden relative">
-      <main className="flex-1 overflow-y-auto pb-[4.5rem]">
+      <main className="flex-1 overflow-y-auto pb-nav-safe">
         {/* L'Outlet renderizza le route figlie */}
         <Outlet />
       </main>

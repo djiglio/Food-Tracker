@@ -12,8 +12,21 @@
   #root {
     @apply h-full w-full flex flex-col;
   }
-}
-
 @layer utilities {
-  /* Utility per safe area in PWA mobile (rimossa) */
+  .pt-safe {
+    padding-top: max(env(safe-area-inset-top), 16px);
+  }
+  .pb-safe {
+    padding-bottom: max(env(safe-area-inset-bottom), 16px);
+  }
+  /* Nav height needs to expand with the bottom safe area */
+  .pb-nav-safe {
+    padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+  }
+  .glass {
+    @apply bg-zinc-900/60 backdrop-blur-xl border border-white/10 shadow-lg;
+  }
+  .glass-header {
+    @apply bg-zinc-950/70 backdrop-blur-2xl border-b border-white/5;
+  }
 }
