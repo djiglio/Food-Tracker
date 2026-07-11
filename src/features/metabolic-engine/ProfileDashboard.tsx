@@ -3,14 +3,21 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { useUserStore } from '@/store/userStore';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { Target, Beef, Wheat, Droplet, Clock, Database, Share, SlidersHorizontal, ShoppingCart, ChevronRight } from 'lucide-react';
+import { Target, Beef, Wheat, Droplet, Clock, Database, Share, SlidersHorizontal, ShoppingCart, ChevronRight, Cloud, LogOut } from 'lucide-react';
 import { exportAllData } from '@/core/export';
+import { loginWithGoogle, logoutGoogle, auth } from '@/services/firebase';
 
 export const ProfileDashboard: React.FC = () => {
   const profile = useUserStore((state) => state.profile);
   const getActiveTarget = useUserStore((state) => state.getActiveTarget);
   const logout = useUserStore((state) => state.logout);
   const navigate = useNavigate();
+  const [user, setUser] = React.useState(auth.currentUser);
+
+  React.useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((u) => setUser(u));
+    return () => unsubscribe();
+  }, []);
 
   if (!profile) {
     return <Navigate to="/onboarding" replace />;
@@ -171,7 +178,49 @@ export const ProfileDashboard: React.FC = () => {
         </Card>
       </div>
 
-      <div className="pt-4">
+      {/* Cloud & Account */}
+      <div className="pt-2">
+        <h3 className="text-sm font-bold tracking-widest uppercase text-zinc-500 mb-3 ml-1">Account & Cloud Sync</h3>
+        <Card className="border-zinc-800 bg-zinc-900/50">
+          <CardContent className="p-2 space-y-1">
+            {!user ? (
+              <button 
+                onClick={loginWithGoogle}
+                className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-zinc-800/80 transition-colors text-left active:scale-95"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-blue-500/10 text-blue-500 rounded-lg">
+                    <Cloud size={18} />
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold text-white">Accedi con Google</div>
+                    <div className="text-[11px] text-zinc-500">Abilita il backup Cloud automatico</div>
+                  </div>
+                </div>
+                <ChevronRight size={16} className="text-zinc-600" />
+              </button>
+            ) : (
+              <button 
+                onClick={logoutGoogle}
+                className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-zinc-800/80 transition-colors text-left active:scale-95"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-red-500/10 text-red-500 rounded-lg">
+                    <LogOut size={18} />
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold text-white">Disconnetti ({user.email})</div>
+                    <div className="text-[11px] text-zinc-500">I dati restano sul dispositivo</div>
+                  </div>
+                </div>
+                <ChevronRight size={16} className="text-zinc-600" />
+              </button>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="pt-4 space-y-3">
         <Button variant="secondary" fullWidth onClick={handleRecalculate}>
           Resetta Profilo & Ricalcola
         </Button>

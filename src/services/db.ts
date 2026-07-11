@@ -1,4 +1,5 @@
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
+import { triggerDebouncedSync } from './sync';
 
 export interface FoodLogItem {
   id: string; // UUID of this specific log
@@ -71,6 +72,7 @@ export const getDayRecord = async (date: string): Promise<DiaryDayRecord | undef
 export const saveDayRecord = async (record: DiaryDayRecord): Promise<void> => {
   const db = await initDB();
   await db.put('history', record);
+  triggerDebouncedSync();
 };
 
 export interface RecipeIngredient {
@@ -109,6 +111,7 @@ export interface FoodEntity {
 export const saveFood = async (food: FoodEntity): Promise<void> => {
   const db = await initDB();
   await db.put('foods', food);
+  triggerDebouncedSync();
 };
 
 export const getFoodByBarcode = async (barcode: string): Promise<FoodEntity | undefined> => {
@@ -131,6 +134,7 @@ export const searchFoods = async (query: string): Promise<FoodEntity[]> => {
 export const saveWeightLog = async (date: string, weightKg: number): Promise<void> => {
   const db = await initDB();
   await db.put('weightLogs', { date, weightKg });
+  triggerDebouncedSync();
 };
 
 export const getWeightLogs = async (): Promise<{date: string, weightKg: number}[]> => {
