@@ -176,8 +176,8 @@ export const Onboarding: React.FC = () => {
                 <Button type="button" variant={profile.gender === 'F' ? 'primary' : 'secondary'} fullWidth onClick={() => setDraftProfile({ ...profile, gender: 'F' })}>Donna</Button>
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-2"><Calendar size={14} /> Età (16-99)</label>
-                <Input type="number" min={16} max={99} placeholder="es. 28" value={profile.age || ''} onChange={(e) => setDraftProfile({ ...profile, age: parseInt(e.target.value) || undefined })} />
+                <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-2"><Calendar size={14} /> Età</label>
+                <Input type="number" min={16} max={99} value={profile.age || ''} onChange={(e) => setDraftProfile({ ...profile, age: parseInt(e.target.value) || undefined })} />
               </div>
               <Button fullWidth disabled={!profile.age || profile.age < 16 || profile.age > 99} onClick={handleNext} className="mt-6">Continua <ArrowRight className="ml-2" size={18} /></Button>
             </CardContent>
@@ -189,12 +189,12 @@ export const Onboarding: React.FC = () => {
                 <h2 className="text-2xl font-bold tracking-tight">Le tue misure</h2>
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-2"><Ruler size={14} /> Altezza (150-220 cm)</label>
-                <Input type="number" min={150} max={220} placeholder="es. 175" value={profile.heightCm || ''} onChange={(e) => setDraftProfile({ ...profile, heightCm: parseInt(e.target.value) || undefined })} />
+                <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-2"><Ruler size={14} /> Altezza (cm)</label>
+                <Input type="number" min={150} max={220} value={profile.heightCm || ''} onChange={(e) => setDraftProfile({ ...profile, heightCm: parseInt(e.target.value) || undefined })} />
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-2"><Weight size={14} /> Peso Attuale (kg)</label>
-                <Input type="number" min={30} max={300} placeholder="es. 70" value={profile.weightKg || ''} onChange={(e) => setDraftProfile({ ...profile, weightKg: parseFloat(e.target.value) || undefined })} />
+                <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-2"><Weight size={14} /> Peso (kg)</label>
+                <Input type="number" min={30} max={300} value={profile.weightKg || ''} onChange={(e) => setDraftProfile({ ...profile, weightKg: parseFloat(e.target.value) || undefined })} />
               </div>
               <div className="flex space-x-3 mt-6">
                 <Button variant="ghost" onClick={handleBack}>Indietro</Button>
@@ -240,11 +240,11 @@ export const Onboarding: React.FC = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-2"><Target size={14} /> Obiettivo (kg)</label>
-                  <Input type="number" placeholder="Es. 65" value={targetWeight === '' ? '' : targetWeight} onChange={(e) => setTargetWeight(parseFloat(e.target.value) || '')} />
+                  <Input type="number" value={targetWeight === '' ? '' : targetWeight} onChange={(e) => setTargetWeight(parseFloat(e.target.value) || '')} />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-2"><Clock size={14} /> Tempo (Settimane)</label>
-                  <Input type="number" min={1} placeholder="Es. 12" value={weeks === '' ? '' : weeks} onChange={(e) => setWeeks(parseInt(e.target.value) || '')} />
+                  <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-2"><Clock size={14} /> Tempo (settimane)</label>
+                  <Input type="number" min={1} value={weeks === '' ? '' : weeks} onChange={(e) => setWeeks(parseInt(e.target.value) || '')} />
                 </div>
               </div>
 
