@@ -4,9 +4,10 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { 
-  ActivityLevel, Gender, UserMetabolicProfile, WeightGoal, 
-  getDefaultMeals, TargetVersion, DailyMacroTarget, calculateTDEE, MealConfig 
+  ActivityLevel, UserMetabolicProfile, WeightGoal, 
+  getDefaultMeals, TargetVersion, DailyMacroTarget, calculateTDEE 
 } from '@/core/metabolism';
+import { calculateMetabolicProfile, generateTargetVersion } from '@/core/metabolism';
 import { useUserStore } from '@/store/userStore';
 import { Activity, Ruler, Weight, Calendar, ArrowRight, Target, AlertTriangle, Clock, ArrowUp, ArrowDown, Trash2, Plus } from 'lucide-react';
 import { cn } from '@/core/utils';

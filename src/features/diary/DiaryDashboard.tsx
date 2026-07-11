@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { useUserStore } from '@/store/userStore';
 import { useDiaryStore } from '@/store/diaryStore';
-import { ChevronLeft, ChevronRight, Droplet, Plus, Copy, Search, Trash2, Scale } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Droplet, Plus, Copy, Trash2, Scale } from 'lucide-react';
 import { CopyMealModal } from './CopyMealModal';
 import { getWeightLogs, saveWeightLog } from '@/services/db';
 

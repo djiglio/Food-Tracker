@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Search, ArrowLeft, Plus, ChevronRight, ScanLine } from 'lucide-react';
+import { Search, ArrowLeft, Plus, ChevronRight, ScanLine, ChefHat } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { searchFoods, FoodEntity, getFoodByBarcode, saveFood } from '@/services/db';
 import { fetchOpenFoodFacts } from '@/services/openfoodfacts';
 import AddFoodDrawer from './AddFoodDrawer';
 import CreateFood from './CreateFood';
+import CreateRecipe from './CreateRecipe';
 import BarcodeScanner from './BarcodeScanner';
 
 export const SearchDashboard: React.FC = () => {
@@ -17,6 +18,7 @@ export const SearchDashboard: React.FC = () => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<FoodEntity[]>([]);
   const [isCreating, setIsCreating] = useState(false);
+  const [isCreatingRecipe, setIsCreatingRecipe] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
   const [scannedBarcode, setScannedBarcode] = useState<string | undefined>(undefined);
   const [selectedFood, setSelectedFood] = useState<FoodEntity | null>(null);
@@ -62,7 +64,7 @@ export const SearchDashboard: React.FC = () => {
     }
   };
 
-  // Se siamo in modalità creazione, renderizza il form di creazione
+  // Se siamo in modalità creazione semplice
   if (isCreating) {
     return (
       <CreateFood 
@@ -74,8 +76,21 @@ export const SearchDashboard: React.FC = () => {
         onFoodCreated={(newFood) => {
           setIsCreating(false);
           setScannedBarcode(undefined);
-          setSelectedFood(newFood); // Apri subito il drawer per aggiungerlo
+          setSelectedFood(newFood);
         }} 
+      />
+    );
+  }
+
+  // Se siamo in modalità creazione ricetta
+  if (isCreatingRecipe) {
+    return (
+      <CreateRecipe 
+        onBack={() => setIsCreatingRecipe(false)}
+        onRecipeCreated={(newRecipe) => {
+          setIsCreatingRecipe(false);
+          setSelectedFood(newRecipe);
+        }}
       />
     );
   }
@@ -123,17 +138,27 @@ export const SearchDashboard: React.FC = () => {
             <p className="text-zinc-500 text-sm">
               {query ? 'Nessun alimento trovato nel tuo database.' : 'Digita per cercare tra i tuoi alimenti salvati.'}
             </p>
-            <Button variant="secondary" onClick={() => setIsCreating(true)} className="mt-4">
-              <Plus size={18} className="mr-2" /> Crea Alimento Custom
-            </Button>
+            <div className="mt-4 flex flex-col gap-2 w-full max-w-xs mx-auto">
+              <Button variant="secondary" onClick={() => setIsCreatingRecipe(true)} className="w-full">
+                <ChefHat size={18} className="mr-2" /> Crea Ricetta Composta
+              </Button>
+              <Button variant="ghost" onClick={() => setIsCreating(true)} className="w-full text-zinc-400">
+                <Plus size={18} className="mr-2" /> Crea Alimento Custom
+              </Button>
+            </div>
           </div>
         ) : (
           <>
             <div className="flex justify-between items-center mb-2 px-1">
               <span className="text-xs font-bold tracking-widest uppercase text-zinc-500">I Miei Alimenti</span>
-              <button onClick={() => setIsCreating(true)} className="text-xs text-brand-primary font-semibold flex items-center">
-                <Plus size={14} className="mr-1" /> Nuovo
-              </button>
+              <div className="flex gap-3">
+                <button onClick={() => setIsCreatingRecipe(true)} className="text-xs text-brand-primary font-semibold flex items-center">
+                  <Plus size={14} className="mr-1" /> Ricetta
+                </button>
+                <button onClick={() => setIsCreating(true)} className="text-xs text-brand-primary font-semibold flex items-center">
+                  <Plus size={14} className="mr-1" /> Alimento
+                </button>
+              </div>
             </div>
             
             {results.map((food) => (

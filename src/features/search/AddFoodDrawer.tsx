@@ -27,7 +27,7 @@ export const AddFoodDrawer: React.FC<AddFoodDrawerProps> = ({ food, targetMealId
       if (isPortionMode && hasPortion) {
         setAmountStr('1');
       } else {
-        setAmountStr(hasPortion ? food.defaultUnitAmount.toString() : '100');
+        setAmountStr(hasPortion ? food.defaultUnitAmount!.toString() : '100');
       }
     }
   }, [food, isPortionMode]);
@@ -56,7 +56,7 @@ export const AddFoodDrawer: React.FC<AddFoodDrawerProps> = ({ food, targetMealId
       foodId: food.id,
       name: food.name,
       amount: isPortionMode ? inputValue : actualGrams,
-      unit: isPortionMode && hasPortion ? food.defaultUnit! : 'g',
+      unit: (isPortionMode && hasPortion ? food.defaultUnit! : 'g') as 'g' | 'unit',
       macros: {
         kcal: currentKcal,
         proteinG: Math.round(currentPro * 10) / 10,

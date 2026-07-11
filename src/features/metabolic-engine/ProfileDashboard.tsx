@@ -3,12 +3,11 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { useUserStore } from '@/store/userStore';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { Flame, Target, Beef, Wheat, Droplet, Clock, Database, Share } from 'lucide-react';
+import { Target, Beef, Wheat, Droplet, Clock, Database, Share } from 'lucide-react';
 import { exportAllData } from '@/core/export';
 
 export const ProfileDashboard: React.FC = () => {
   const profile = useUserStore((state) => state.profile);
-  const bmr = useUserStore((state) => state.bmr);
   const getActiveTarget = useUserStore((state) => state.getActiveTarget);
   const logout = useUserStore((state) => state.logout);
   const navigate = useNavigate();

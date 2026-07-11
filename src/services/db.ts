@@ -73,7 +73,18 @@ export const saveDayRecord = async (record: DiaryDayRecord): Promise<void> => {
   await db.put('history', record);
 };
 
-// CRUD for Foods
+export interface RecipeIngredient {
+  foodId: string;
+  name: string;
+  amountGrams: number;
+  macros: {
+    kcal: number;
+    proteinG: number;
+    carbsG: number;
+    fatG: number;
+  };
+}
+
 export interface FoodEntity {
   id: string;
   name: string;
@@ -85,6 +96,13 @@ export interface FoodEntity {
   defaultUnit?: string;
   defaultUnitAmount?: number;
   barcode?: string; // EAN-13 per lo scanner
+  
+  // Recipe fields
+  isRecipe?: boolean;
+  recipeIngredients?: RecipeIngredient[];
+  rawWeightGrams?: number;
+  cookedWeightGrams?: number;
+  notes?: string;
 }
 
 export const saveFood = async (food: FoodEntity): Promise<void> => {

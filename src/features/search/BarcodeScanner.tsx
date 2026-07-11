@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode';
 import { X, Loader2, Search } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
 
 interface BarcodeScannerProps {
   onScan: (barcode: string) => void;
@@ -28,7 +27,7 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onScan, onClose 
             formatsToSupport: [Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN_8],
             aspectRatio: window.innerWidth / window.innerHeight,
           },
-          (decodedText) => {
+          (decodedText: string) => {
             // Quando un codice viene trovato
             if (!isProcessing) {
               setIsProcessing(true);
@@ -42,14 +41,14 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onScan, onClose 
               if (scannerRef.current) {
                 scannerRef.current.stop().then(() => {
                   onScan(decodedText);
-                }).catch(err => {
+                }).catch((err: unknown) => {
                   console.error("Errore stop scanner", err);
                   onScan(decodedText);
                 });
               }
             }
           },
-          (errorMessage) => {
+          (_errorMessage: string) => {
             // Ignoriamo i continui log di "non trovato" per frame
           }
         );
