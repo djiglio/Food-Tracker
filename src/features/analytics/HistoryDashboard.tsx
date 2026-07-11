@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/Card';
-import { Input } from '@/components/ui/Input';
+import { NumpadInput } from '@/components/ui/NumpadInput';
 import { Button } from '@/components/ui/Button';
 import { ComposedChart, Area, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { initDB, getWeightLogs, saveWeightLog } from '@/services/db';
@@ -206,12 +206,11 @@ export const HistoryDashboard: React.FC = () => {
               </div>
             ) : (
               <div className="flex gap-2 items-center">
-                <Input 
-                  autoFocus
-                  type="number" 
+                <NumpadInput 
+                  label="Inserisci Peso"
                   placeholder="Es. 70.5" 
                   value={newWeight} 
-                  onChange={(e) => setNewWeight(e.target.value)} 
+                  onChange={(val) => setNewWeight(val)} 
                   className="bg-zinc-900 border-zinc-800"
                 />
                 <Button variant="primary" onClick={handleSaveWeight} disabled={!newWeight}>Salva</Button>

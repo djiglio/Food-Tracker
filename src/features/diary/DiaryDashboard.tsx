@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/Button';
 import { useUserStore } from '@/store/userStore';
 import { useDiaryStore } from '@/store/diaryStore';
 import { getMacroTargetForDate } from '@/core/metabolism';
-import { ChevronLeft, ChevronRight, Droplet, Plus, Copy, Trash2, Scale } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Droplet, Flame, Droplets, Target, Utensils, Calendar, Scale, Copy, Trash2 } from 'lucide-react';
+import { NumpadInput } from '@/components/ui/NumpadInput';
 import { CopyMealModal } from './CopyMealModal';
 import { getWeightLogs, saveWeightLog } from '@/services/db';
 
@@ -199,13 +200,11 @@ export const DiaryDashboard: React.FC = () => {
                 </button>
               ) : (
                 <div className="flex gap-1">
-                  <input 
-                    type="number" 
+                  <NumpadInput 
                     value={newWeightStr}
-                    onChange={e => setNewWeightStr(e.target.value)}
+                    onChange={(val) => setNewWeightStr(val)}
                     placeholder="kg"
                     className="w-14 bg-zinc-900 border border-zinc-700 text-white text-xs px-1 py-1 rounded-lg text-center"
-                    autoFocus
                   />
                   <button 
                     onClick={handleSaveWeight} 

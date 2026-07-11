@@ -1,17 +1,31 @@
 import React, { forwardRef } from 'react';
-import { cn } from '@/core/utils';
+import { BaseInput, InputProps } from './BaseInput';
+import NumpadInput from './NumpadInput';
 
-export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+export const Input = forwardRef<HTMLInputElement, InputProps>(
+  ({ type, ...props }, ref) => {
+    // Se è un input numerico, deviamo automaticamente sul Custom Numpad
+    if (type === 'number') {
+      return (
+        <NumpadInput 
+          {...props}
+          value={props.value as string | number || ''}
+          onChange={(val: string) => {
+            if (props.onChange) {
+              // Simuliamo un evento React fittizio in modo da non rompere il codice esistente
+              const syntheticEvent = {
+                target: { value: val, name: props.name }
+              } as unknown as React.ChangeEvent<HTMLInputElement>;
+              props.onChange(syntheticEvent);
+            }
+          }}
+        />
+      );
+    }
 
-const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, ...props }, ref) => {
     return (
-      <input
+      <BaseInput
         type={type}
-        className={cn(
-          "flex h-12 w-full rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-2 text-sm text-zinc-50 transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-primary disabled:cursor-not-allowed disabled:opacity-50",
-          className
-        )}
         ref={ref}
         {...props}
       />
@@ -19,5 +33,3 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
   }
 );
 Input.displayName = "Input";
-
-export { Input };
