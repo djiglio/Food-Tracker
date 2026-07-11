@@ -96,6 +96,7 @@ export interface FoodEntity {
   defaultUnit?: string;
   defaultUnitAmount?: number;
   barcode?: string; // EAN-13 per lo scanner
+  isFavorite?: boolean; // Se l'alimento è tra i preferiti
   
   // Recipe fields
   isRecipe?: boolean;

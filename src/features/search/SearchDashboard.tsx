@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Search, ArrowLeft, Plus, ChevronRight, ScanLine, ChefHat } from 'lucide-react';
+import { Search, ArrowLeft, Plus, ChevronRight, ScanLine, ChefHat, Star } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { searchFoods, FoodEntity, getFoodByBarcode, saveFood } from '@/services/db';
@@ -28,7 +28,13 @@ export const SearchDashboard: React.FC = () => {
     const timer = setTimeout(async () => {
       try {
         const res = await searchFoods(query);
-        setResults(res);
+        // Ordina mettendo i preferiti in alto
+        const sorted = res.sort((a, b) => {
+          if (a.isFavorite && !b.isFavorite) return -1;
+          if (!a.isFavorite && b.isFavorite) return 1;
+          return a.name.localeCompare(b.name);
+        });
+        setResults(sorted);
       } catch (e) {
         console.error(e);
       }
@@ -62,6 +68,22 @@ export const SearchDashboard: React.FC = () => {
       setScannedBarcode(barcode);
       setIsCreating(true);
     }
+  };
+
+  const toggleFavorite = async (e: React.MouseEvent, food: FoodEntity) => {
+    e.stopPropagation(); // Previene l'apertura del drawer
+    const updatedFood = { ...food, isFavorite: !food.isFavorite };
+    await saveFood(updatedFood);
+    
+    // Aggiorna lo stato locale senza ricaricare tutto
+    setResults(prev => {
+      const newResults = prev.map(f => f.id === food.id ? updatedFood : f);
+      return newResults.sort((a, b) => {
+        if (a.isFavorite && !b.isFavorite) return -1;
+        if (!a.isFavorite && b.isFavorite) return 1;
+        return a.name.localeCompare(b.name);
+      });
+    });
   };
 
   // Se siamo in modalità creazione semplice
@@ -168,14 +190,25 @@ export const SearchDashboard: React.FC = () => {
                 className="w-full text-left p-4 bg-zinc-900/40 hover:bg-zinc-800/60 border border-zinc-800/80 rounded-2xl flex items-center justify-between transition-colors active:scale-95 group"
               >
                 <div>
-                  <h3 className="font-semibold text-white leading-tight">{food.name}</h3>
+                  <h3 className="font-semibold text-white leading-tight flex items-center gap-2">
+                    {food.name}
+                    {food.isFavorite && <Star size={12} className="text-amber-400 fill-amber-400" />}
+                  </h3>
                   <div className="text-xs text-zinc-500 mt-1 flex items-center gap-2">
                     {food.brand && <span className="bg-zinc-800 px-1.5 py-0.5 rounded text-[10px]">{food.brand}</span>}
                     <span>{food.kcalPer100} kcal / 100g</span>
                   </div>
                 </div>
-                <div className="text-zinc-600 group-hover:text-brand-primary transition-colors">
-                  <ChevronRight size={20} />
+                <div className="flex items-center gap-4">
+                  <button 
+                    onClick={(e) => toggleFavorite(e, food)}
+                    className="p-2 -mr-2 text-zinc-600 hover:text-amber-400 active:scale-95 transition-all"
+                  >
+                    <Star size={18} className={food.isFavorite ? "text-amber-400 fill-amber-400" : ""} />
+                  </button>
+                  <div className="text-zinc-600 group-hover:text-brand-primary transition-colors">
+                    <ChevronRight size={20} />
+                  </div>
                 </div>
               </button>
             ))}
