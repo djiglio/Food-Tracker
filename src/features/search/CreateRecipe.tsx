@@ -116,7 +116,7 @@ export const CreateRecipe: React.FC<CreateRecipeProps> = ({ onBack, onRecipeCrea
   return (
     <div className="flex flex-col h-full bg-zinc-950 overflow-y-auto">
       {/* Header Fissato */}
-      <div className="sticky top-0 z-40 bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-900 px-4 py-3 flex items-center justify-between pt-safe">
+      <div className="sticky top-0 z-40 bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-900 px-4 py-3 flex items-center justify-between pt-safe-header">
         <button onClick={onBack} className="p-2 text-zinc-400 hover:text-white active:scale-95 bg-zinc-900 rounded-full">
           <ArrowLeft size={20} />
         </button>

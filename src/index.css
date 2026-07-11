@@ -20,6 +20,12 @@
     padding-bottom: env(safe-area-inset-bottom);
   }
   .pt-safe {
-    padding-top: env(safe-area-inset-top);
+    padding-top: max(env(safe-area-inset-top), 1rem);
+  }
+  .pt-safe-header {
+    padding-top: max(env(safe-area-inset-top), 0.75rem);
+  }
+  .pb-safe-overlay {
+    padding-bottom: max(env(safe-area-inset-bottom), 1.5rem);
   }
 }
