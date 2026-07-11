@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Search, PlusCircle, Calendar, User } from 'lucide-react';
+import { Home, Search, Calendar, User } from 'lucide-react';
 import { cn } from '@/core/utils';
 
 const BottomNav: React.FC = () => {
@@ -26,18 +26,10 @@ const BottomNav: React.FC = () => {
             }
           >
             {({ isActive }) => (
-              <>
-                {item.isAction ? (
-                  <div className="absolute -top-5 bg-brand-primary text-zinc-950 p-3 rounded-full shadow-lg shadow-brand-primary/20 active:scale-95 transition-transform">
-                    <item.icon size={24} strokeWidth={2.5} />
-                  </div>
-                ) : (
-                  <>
-                    <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} />
-                    <span className="text-[10px] font-medium">{item.label}</span>
-                  </>
-                )}
-              </>
+                <>
+                  <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+                  <span className="text-[10px] font-medium">{item.label}</span>
+                </>
             )}
           </NavLink>
         ))}
