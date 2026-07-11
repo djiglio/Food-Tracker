@@ -16,7 +16,9 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onScan, onClose 
     // Inizializza lo scanner
     const initScanner = async () => {
       try {
-        scannerRef.current = new Html5Qrcode("reader");
+        scannerRef.current = new Html5Qrcode("reader", { 
+          formatsToSupport: [Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN_8]
+        });
         
         // Configuriamo lo scanner per usare la telecamera posteriore ed essere molto reattivo
         await scannerRef.current.start(
@@ -24,7 +26,6 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onScan, onClose 
           {
             fps: 10,
             qrbox: { width: 250, height: 150 }, // Reticolo a forma di codice a barre
-            formatsToSupport: [Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN_8],
             aspectRatio: window.innerWidth / window.innerHeight,
           },
           (decodedText: string) => {

@@ -4,7 +4,6 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { ArrowLeft, Search, Plus, Trash2, ChefHat, Save } from 'lucide-react';
-import { cn } from '@/core/utils';
 
 interface CreateRecipeProps {
   onBack: () => void;

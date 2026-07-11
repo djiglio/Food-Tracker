@@ -5,9 +5,8 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { 
   ActivityLevel, UserMetabolicProfile, WeightGoal, 
-  getDefaultMeals, TargetVersion, DailyMacroTarget, calculateTDEE 
+  getDefaultMeals, TargetVersion, DailyMacroTarget, calculateTDEE, MealTargetConfig 
 } from '@/core/metabolism';
-import { calculateMetabolicProfile, generateTargetVersion } from '@/core/metabolism';
 import { useUserStore } from '@/store/userStore';
 import { Activity, Ruler, Weight, Calendar, ArrowRight, Target, AlertTriangle, Clock, ArrowUp, ArrowDown, Trash2, Plus } from 'lucide-react';
 import { cn } from '@/core/utils';
@@ -130,7 +129,7 @@ export const Onboarding: React.FC = () => {
       };
 
       // Mappa l'array temporaneo nel formato MealConfig richiesto
-      const finalMeals: MealConfig[] = meals.map(m => ({
+      const finalMeals: MealTargetConfig[] = meals.map(m => ({
         id: m.id,
         name: m.name,
         percentage: (parseInt(m.percStr) || 0) / 100
@@ -351,7 +350,7 @@ export const Onboarding: React.FC = () => {
                 ))}
               </div>
 
-              <Button variant="dashed" fullWidth onClick={addMeal} className="mt-2 text-zinc-400 border-zinc-800 hover:bg-zinc-800">
+              <Button variant="secondary" fullWidth onClick={addMeal} className="mt-2 text-zinc-400 border-dashed border-2 border-zinc-800 hover:bg-zinc-800">
                 <Plus size={16} className="mr-2" /> Aggiungi Pasto
               </Button>
 
