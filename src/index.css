@@ -12,6 +12,8 @@
   #root {
     @apply h-full w-full flex flex-col;
   }
+}
+
 @layer utilities {
   .pt-safe {
     padding-top: max(env(safe-area-inset-top), 16px);
