@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
 import { ArrowLeft, ShoppingCart, Calendar, CheckCircle2, Copy, ChefHat, Check } from 'lucide-react';
 import { initDB } from '@/services/db';
 import { cn } from '@/core/utils';

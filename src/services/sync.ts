@@ -28,7 +28,7 @@ export const syncLocalToCloud = async () => {
     if (state.profile) {
       await setDoc(doc(firestore, `users/${uid}/data/profile`), {
         profile: state.profile,
-        targetVersions: state.targetVersions,
+        targetHistory: state.targetHistory,
       });
     }
 
@@ -87,8 +87,8 @@ export const downloadCloudToLocal = async () => {
       if (data.profile) {
         useUserStore.getState().setProfile(data.profile);
       }
-      if (data.targetVersions) {
-        useUserStore.setState({ targetVersions: data.targetVersions });
+      if (data.targetHistory) {
+        useUserStore.setState({ targetHistory: data.targetHistory });
       }
     }
 

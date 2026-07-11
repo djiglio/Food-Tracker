@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { useUserStore } from '@/store/userStore';
 import { useDiaryStore } from '@/store/diaryStore';
 import { getMacroTargetForDate } from '@/core/metabolism';
-import { ChevronLeft, ChevronRight, Plus, Droplet, Flame, Droplets, Target, Utensils, Calendar, Scale, Copy, Trash2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Droplet, Scale, Copy, Trash2 } from 'lucide-react';
 import { NumpadInput } from '@/components/ui/NumpadInput';
 import { CopyMealModal } from './CopyMealModal';
 import { getWeightLogs, saveWeightLog } from '@/services/db';
