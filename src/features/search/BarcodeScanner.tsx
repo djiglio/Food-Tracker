@@ -17,7 +17,8 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onScan, onClose 
     const initScanner = async () => {
       try {
         scannerRef.current = new Html5Qrcode("reader", { 
-          formatsToSupport: [Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN_8]
+          formatsToSupport: [Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN_8],
+          verbose: false
         });
         
         // Configuriamo lo scanner per usare la telecamera posteriore ed essere molto reattivo
