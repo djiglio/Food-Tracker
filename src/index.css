@@ -15,8 +15,5 @@
 }
 
 @layer utilities {
-  /* Utility per safe area in PWA mobile */
-  .pb-safe-overlay {
-    padding-bottom: 1.5rem;
-  }
+  /* Utility per safe area in PWA mobile (rimossa) */
 }
