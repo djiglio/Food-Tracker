@@ -21,8 +21,7 @@
     "react-router-dom": "^6.24.1",
     "recharts": "^3.9.2",
     "tailwind-merge": "^2.4.0",
-    "zustand": "^4.5.4",
-    "html5-qrcode": "^2.3.8"
+    "zustand": "^4.5.4"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
