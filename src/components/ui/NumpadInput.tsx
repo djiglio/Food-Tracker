@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { BaseInput } from './BaseInput';
 import CustomNumpad from './CustomNumpad';
 import { X, Check } from 'lucide-react';
@@ -64,7 +65,7 @@ export const NumpadInput: React.FC<NumpadInputProps> = ({
         <div className="absolute inset-0 bg-transparent z-10" />
       </div>
 
-      {isOpen && (
+      {isOpen && createPortal(
         <div className="fixed inset-0 z-[120] flex flex-col justify-end bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-zinc-950 rounded-t-3xl border-t border-zinc-800 p-6 pb-[max(env(safe-area-inset-bottom),1.5rem)] animate-in slide-in-from-bottom-full duration-300">
             
@@ -102,7 +103,8 @@ export const NumpadInput: React.FC<NumpadInputProps> = ({
               Conferma
             </Button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

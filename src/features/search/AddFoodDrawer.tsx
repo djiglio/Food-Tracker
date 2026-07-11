@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Button } from '@/components/ui/Button';
 import { X, Check } from 'lucide-react';
 import { FoodEntity, FoodLogItem } from '@/services/db';
@@ -70,7 +71,7 @@ export const AddFoodDrawer: React.FC<AddFoodDrawerProps> = ({ food, targetMealId
     navigate('/'); // Ritorna al diario
   };
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-[100] flex flex-col justify-end bg-black/60 backdrop-blur-sm">
       <div className="bg-zinc-950 rounded-t-3xl border-t border-zinc-800 p-6 pb-[max(env(safe-area-inset-bottom),1.5rem)] animate-in slide-in-from-bottom-full duration-300">
         
@@ -153,7 +154,8 @@ export const AddFoodDrawer: React.FC<AddFoodDrawerProps> = ({ food, targetMealId
           Aggiungi al Diario
         </Button>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
