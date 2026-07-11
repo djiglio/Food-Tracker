@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { ComposedChart, Area, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { initDB, getWeightLogs, saveWeightLog } from '@/services/db';
 import { useUserStore } from '@/store/userStore';
+import { getMacroTargetForDate } from '@/core/metabolism';
 import { TrendingDown, TrendingUp, Scale, Activity } from 'lucide-react';
 import { cn } from '@/core/utils';
 import ComplianceCalendar, { ComplianceStatus } from './ComplianceCalendar';
@@ -47,7 +48,7 @@ export const HistoryDashboard: React.FC = () => {
       // 1. Calcoliamo la mappa di compliance per tutto lo storico
       allHistory.forEach(record => {
         const activeTarget = getActiveTarget(record.date);
-        const targetKcal = activeTarget ? activeTarget.dailyTarget.kcal : 2000;
+        const targetKcal = activeTarget ? getMacroTargetForDate(activeTarget, record.date).kcal : 2000;
         
         let consumedKcal = 0;
         if (record.meals) {
@@ -97,7 +98,7 @@ export const HistoryDashboard: React.FC = () => {
         
         const record = allHistory.find(r => r.date === dateStr);
         const activeTarget = getActiveTarget(dateStr);
-        const targetKcal = activeTarget ? activeTarget.dailyTarget.kcal : 2000;
+        const targetKcal = activeTarget ? getMacroTargetForDate(activeTarget, dateStr).kcal : 2000;
 
         let consumedKcal = 0;
         if (record && record.meals) {

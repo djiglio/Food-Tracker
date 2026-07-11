@@ -29,6 +29,10 @@ export interface TargetVersion {
   goal: WeightGoal;
   dailyTarget: DailyMacroTarget;
   meals: MealTargetConfig[];
+  
+  // Macro-Cycling
+  isMacroCyclingEnabled?: boolean;
+  cyclingTargets?: Record<number, DailyMacroTarget>;
 }
 
 const ACTIVITY_MULTIPLIERS: Record<ActivityLevel, number> = {
@@ -107,4 +111,16 @@ export function getDefaultMeals(): MealTargetConfig[] {
     { id: 'snack', name: 'Spuntino', percentage: 0.10 },
     { id: 'dinner', name: 'Cena', percentage: 0.35 }
   ];
+}
+
+/**
+ * Ritorna i target macro calcolati per una specifica data tenendo conto del Macro-Cycling.
+ */
+export function getMacroTargetForDate(target: TargetVersion, dateStr: string): DailyMacroTarget {
+  if (target.isMacroCyclingEnabled && target.cyclingTargets) {
+    const dayOfWeek = new Date(dateStr).getDay();
+    // Se non è stato impostato per quel giorno, falliamo al default
+    return target.cyclingTargets[dayOfWeek] || target.dailyTarget;
+  }
+  return target.dailyTarget;
 }

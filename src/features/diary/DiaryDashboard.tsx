@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { useUserStore } from '@/store/userStore';
 import { useDiaryStore } from '@/store/diaryStore';
+import { getMacroTargetForDate } from '@/core/metabolism';
 import { ChevronLeft, ChevronRight, Droplet, Plus, Copy, Trash2, Scale } from 'lucide-react';
 import { CopyMealModal } from './CopyMealModal';
 import { getWeightLogs, saveWeightLog } from '@/services/db';
@@ -96,7 +97,8 @@ export const DiaryDashboard: React.FC = () => {
     });
   }
 
-  const { dailyTarget, meals } = activeTarget;
+  const { meals } = activeTarget;
+  const dailyTarget = getMacroTargetForDate(activeTarget, currentDate);
 
   // --- Rendering ---
   return (

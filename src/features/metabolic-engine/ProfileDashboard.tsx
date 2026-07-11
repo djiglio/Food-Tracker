@@ -3,7 +3,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { useUserStore } from '@/store/userStore';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { Target, Beef, Wheat, Droplet, Clock, Database, Share } from 'lucide-react';
+import { Target, Beef, Wheat, Droplet, Clock, Database, Share, SlidersHorizontal } from 'lucide-react';
 import { exportAllData } from '@/core/export';
 
 export const ProfileDashboard: React.FC = () => {
@@ -83,6 +83,28 @@ export const ProfileDashboard: React.FC = () => {
               <div className="text-[9px] text-zinc-500">{Math.round((dailyTarget.fatG*9/dailyTarget.kcal)*100)}%</div>
             </CardContent>
           </Card>
+        </div>
+        
+        <div className="mt-3">
+          <button 
+            onClick={() => navigate('/profile/macro-cycling')}
+            className="w-full flex items-center justify-between p-3 rounded-xl bg-zinc-900/50 hover:bg-zinc-800/80 transition-colors border border-zinc-800 active:scale-95"
+          >
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-brand-primary/10 text-brand-primary rounded-lg">
+                <SlidersHorizontal size={18} />
+              </div>
+              <div className="text-left">
+                <div className="text-sm font-semibold text-white">Gestione Macro-Cycling</div>
+                <div className="text-[11px] text-zinc-500">
+                  {activeTarget.isMacroCyclingEnabled ? 'Attivo (Giorni personalizzati)' : 'Disattivato (Target uniforme)'}
+                </div>
+              </div>
+            </div>
+            <div className="text-[10px] uppercase font-bold tracking-widest text-brand-primary bg-brand-primary/10 px-2 py-1 rounded-full">
+              Configura
+            </div>
+          </button>
         </div>
       </div>
 
