@@ -67,8 +67,8 @@ export const CreateFood: React.FC<CreateFoodProps> = ({ onBack, onFoodCreated, p
   };
 
   return (
-    <div className="flex flex-col h-full bg-zinc-950 overflow-y-auto pb-safe">
-      <div className="sticky top-0 z-40 bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-900 px-4 py-3 flex items-center pt-safe gap-3">
+    <div className="flex flex-col h-full bg-zinc-950 overflow-y-auto">
+      <div className="sticky top-0 z-40 bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-900 px-4 pb-3 pt-[max(env(safe-area-inset-top),0.75rem)] flex items-center gap-3">
         <button onClick={onBack} className="p-2 text-zinc-400 hover:text-white active:scale-95 bg-zinc-900 rounded-full">
           <ArrowLeft size={20} />
         </button>

@@ -110,7 +110,7 @@ export const CopyMealModal: React.FC<CopyMealModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-[100] flex flex-col justify-end bg-black/60 backdrop-blur-sm">
-      <div className="bg-zinc-950 rounded-t-3xl border-t border-zinc-800 p-6 pb-safe animate-in slide-in-from-bottom-full duration-300">
+      <div className="bg-zinc-950 rounded-t-3xl border-t border-zinc-800 p-6 pb-[max(env(safe-area-inset-bottom),1.5rem)] animate-in slide-in-from-bottom-full duration-300">
         <div className="flex justify-between items-center mb-6">
           <div>
             <h3 className="text-xl font-bold">Clona in "{targetMealName}"</h3>

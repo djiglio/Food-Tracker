@@ -153,7 +153,7 @@ export const Onboarding: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-zinc-950 p-6 overflow-y-auto pb-safe">
+    <div className="flex flex-col min-h-[100dvh] bg-zinc-950 p-6 pt-[max(env(safe-area-inset-top),1.5rem)] pb-[max(env(safe-area-inset-bottom),1.5rem)] overflow-y-auto">
       <div className="flex-1 flex flex-col justify-center max-w-md w-full mx-auto space-y-6">
         
         {/* Progress */}

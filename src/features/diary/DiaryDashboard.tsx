@@ -106,7 +106,7 @@ export const DiaryDashboard: React.FC = () => {
     <div className="flex flex-col space-y-6">
       
       {/* Header Fissato: Selettore Data */}
-      <div className="sticky top-0 z-40 bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-900 px-4 py-3 flex justify-between items-center pt-safe">
+      <div className="sticky top-0 z-40 bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-900 px-4 pb-3 pt-[max(env(safe-area-inset-top),0.75rem)] flex justify-between items-center">
         <button onClick={handlePrevDay} className="p-2 text-zinc-400 hover:text-white active:scale-95 bg-zinc-900 rounded-full">
           <ChevronLeft size={20} />
         </button>

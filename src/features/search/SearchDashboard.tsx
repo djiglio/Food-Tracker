@@ -123,10 +123,10 @@ export const SearchDashboard: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col h-full bg-zinc-950 overflow-hidden">
+    <div className="flex flex-col min-h-full bg-zinc-950">
       
       {/* Header Ricerca Fissato */}
-      <div className="bg-zinc-950 border-b border-zinc-900 px-4 py-3 pt-safe space-y-4">
+      <div className="sticky top-0 z-40 bg-zinc-950/90 backdrop-blur-xl border-b border-zinc-900 px-4 pb-3 pt-[max(env(safe-area-inset-top),0.75rem)] space-y-4">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate(-1)} className="p-2 text-zinc-400 hover:text-white active:scale-95 bg-zinc-900 rounded-full shrink-0">
             <ArrowLeft size={20} />
@@ -151,7 +151,7 @@ export const SearchDashboard: React.FC = () => {
       </div>
 
       {/* Lista Risultati Scorrevole */}
-      <div className="flex-1 overflow-y-auto p-4 pb-safe space-y-2">
+      <div className="flex-1 p-4 space-y-2">
         {results.length === 0 ? (
           <div className="text-center py-10 space-y-4">
             <div className="mx-auto w-16 h-16 bg-zinc-900 rounded-full flex items-center justify-center text-zinc-700 mb-4">

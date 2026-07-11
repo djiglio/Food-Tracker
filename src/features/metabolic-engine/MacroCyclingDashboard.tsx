@@ -89,7 +89,7 @@ export const MacroCyclingDashboard: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-zinc-950 pb-safe">
+    <div className="flex flex-col min-h-full bg-zinc-950 pt-[max(env(safe-area-inset-top),1.5rem)]">
       {/* Header Assoluto */}
       <div className="flex items-center gap-4 p-4 bg-zinc-950/80 backdrop-blur-md sticky top-0 z-10 border-b border-zinc-900">
         <button onClick={() => navigate('/profile')} className="p-2 -ml-2 text-zinc-400 hover:text-white transition-colors">
