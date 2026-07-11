@@ -3,7 +3,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { useUserStore } from '@/store/userStore';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { Target, Beef, Wheat, Droplet, Clock, Database, Share, SlidersHorizontal } from 'lucide-react';
+import { Target, Beef, Wheat, Droplet, Clock, Database, Share, SlidersHorizontal, ShoppingCart, ChevronRight } from 'lucide-react';
 import { exportAllData } from '@/core/export';
 
 export const ProfileDashboard: React.FC = () => {
@@ -136,6 +136,22 @@ export const ProfileDashboard: React.FC = () => {
         <h3 className="text-sm font-bold tracking-widest uppercase text-zinc-500 mb-3 ml-1">Dati e Privacy</h3>
         <Card className="border-zinc-800 bg-zinc-900/50">
           <CardContent className="p-2 space-y-1">
+            <button 
+              onClick={() => navigate('/profile/shopping-list')}
+              className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-zinc-800/80 transition-colors text-left active:scale-95"
+            >
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-500/10 text-blue-500 rounded-lg">
+                  <ShoppingCart size={18} />
+                </div>
+                <div>
+                  <div className="text-sm font-semibold text-white">Lista della Spesa</div>
+                  <div className="text-[11px] text-zinc-500">Genera spesa automatica dal diario</div>
+                </div>
+              </div>
+              <ChevronRight size={16} className="text-zinc-600" />
+            </button>
+
             <button 
               onClick={exportAllData}
               className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-zinc-800/80 transition-colors text-left active:scale-95"

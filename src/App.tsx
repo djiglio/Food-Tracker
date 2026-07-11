@@ -10,6 +10,7 @@ import DiaryDashboard from './features/diary/DiaryDashboard';
 import SearchDashboard from './features/search/SearchDashboard';
 import HistoryDashboard from './features/analytics/HistoryDashboard';
 import MacroCyclingDashboard from './features/metabolic-engine/MacroCyclingDashboard';
+import ShoppingListDashboard from './features/analytics/ShoppingListDashboard';
 
 const DummyPage = ({ title }: { title: string }) => (
   <div className="p-4">
@@ -42,6 +43,7 @@ const App: React.FC = () => {
           <Route path="/history" element={<HistoryDashboard />} />
           <Route path="/profile" element={<ProfileDashboard />} />
           <Route path="/profile/macro-cycling" element={<MacroCyclingDashboard />} />
+          <Route path="/profile/shopping-list" element={<ShoppingListDashboard />} />
         </Route>
       </Routes>
     </BrowserRouter>
