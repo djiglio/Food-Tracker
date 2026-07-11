@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Impostazioni tipografiche base e reset PWA */
+  html, body {
+    @apply h-full w-full overflow-hidden overscroll-none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  #root {
+    @apply h-full w-full flex flex-col;
+  }
+}
+
+@layer utilities {
+  /* Utility per safe area in PWA mobile */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .pt-safe {
+    padding-top: env(safe-area-inset-top);
+  }
+}
