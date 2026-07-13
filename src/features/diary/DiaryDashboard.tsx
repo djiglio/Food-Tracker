@@ -243,7 +243,7 @@ export const DiaryDashboard: React.FC = () => {
               <Card key={mealConfig.id} className="border-zinc-800/80 bg-zinc-900/40">
                 <CardContent className="p-0">
                   {/* Header Pasto */}
-                  <div className="p-4 flex justify-between items-center border-b border-zinc-800/50">
+                  <div className="p-4 flex justify-between items-center border-b border-zinc-800/50 bg-zinc-800/30">
                     <div>
                       <h3 className="font-bold text-lg">{mealConfig.name}</h3>
                       <div className="text-xs text-zinc-500 font-medium">Target: {mealTargetKcal} kcal</div>
@@ -262,7 +262,7 @@ export const DiaryDashboard: React.FC = () => {
                         <div key={item.id} className="flex justify-between items-center p-3 hover:bg-zinc-800/30 rounded-xl transition-colors group">
                           <div>
                             <div className="font-medium text-sm text-zinc-200">{item.name}</div>
-                            <div className="text-[11px] text-zinc-500">{item.amount}{item.unit} • P: {item.macros.proteinG}g C: {item.macros.carbsG}g F: {item.macros.fatG}g</div>
+                            <div className="text-[11px] text-zinc-500"><span className="font-bold text-zinc-300">{item.amount} {item.unit}</span> • P: {item.macros.proteinG}g C: {item.macros.carbsG}g F: {item.macros.fatG}g</div>
                           </div>
                           <div className="flex items-center gap-3">
                             <span className="font-semibold text-sm">{Math.round(item.macros.kcal)}</span>
