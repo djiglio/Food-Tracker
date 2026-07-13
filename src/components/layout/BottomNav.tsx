@@ -30,9 +30,6 @@ const BottomNav: React.FC = () => {
                   <>
                     <div className="relative">
                       <item.icon size={22} strokeWidth={isActive ? 2.5 : 2} className={cn("transition-transform duration-300", isActive && "scale-110 drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]")} />
-                      {isActive && (
-                        <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-brand-primary shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
-                      )}
                     </div>
                     <span className={cn("text-[10px] font-medium transition-all duration-300", isActive ? "opacity-100" : "opacity-70")}>{item.label}</span>
                   </>
