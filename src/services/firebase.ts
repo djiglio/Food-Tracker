@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, User } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithRedirect, signOut, onAuthStateChanged, User } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -21,10 +21,11 @@ provider.setCustomParameters({ prompt: 'select_account' });
 
 export const loginWithGoogle = async (): Promise<User | null> => {
   try {
-    const result = await signInWithPopup(auth, provider);
-    return result.user;
+    await signInWithRedirect(auth, provider);
+    return null; 
   } catch (error) {
     console.error("Error signing in with Google", error);
+    alert(error instanceof Error ? error.message : "Errore durante il login.");
     return null;
   }
 };
