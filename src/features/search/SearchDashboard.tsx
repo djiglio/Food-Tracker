@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/Button';
 import { searchFoods, FoodEntity, getFoodByBarcode, saveFood, deleteFood } from '@/services/db';
 import { fetchOpenFoodFacts } from '@/services/openfoodfacts';
 import { SwipeableItem } from '@/components/ui/SwipeableItem';
-import { fetchOpenFoodFacts } from '@/services/openfoodfacts';
 import AddFoodDrawer from './AddFoodDrawer';
 import CreateFood from './CreateFood';
 import CreateRecipe from './CreateRecipe';
@@ -109,7 +108,7 @@ export const SearchDashboard: React.FC = () => {
           setScannedBarcode(undefined);
           setFoodToEdit(undefined);
         }} 
-        onFoodCreated={(newFood) => {
+        onFoodCreated={() => {
           setIsCreating(false);
           setScannedBarcode(undefined);
           setFoodToEdit(undefined);

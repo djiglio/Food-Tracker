@@ -1,6 +1,5 @@
 import React, { forwardRef, useImperativeHandle } from 'react';
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
-import { cn } from '@/core/utils';
 
 export interface SwipeableItemRef {
   reset: () => void;
@@ -33,7 +32,7 @@ export const SwipeableItem = forwardRef<SwipeableItemRef, SwipeableItemProps>(({
     }
   }));
 
-  const handleDragEnd = (event: any, info: any) => {
+  const handleDragEnd = (_event: any, info: any) => {
     const offset = info.offset.x;
     const velocity = info.velocity.x;
 

@@ -32,14 +32,6 @@ export const CreateFood: React.FC<CreateFoodProps> = ({ onBack, onFoodCreated, p
       return;
     }
 
-    const nKcal = parseFloat(kcal) || 0;
-    const nPro = parseFloat(pro) || 0;
-    const nCarbs = parseFloat(carbs) || 0;
-    const nFat = parseFloat(fat) || 0;
-
-    let dUnit = 'g';
-    let dAmount = 100;
-
     const parsedKcal = parseFloat(kcal) || 0;
     const parsedPro = parseFloat(pro) || 0;
     const parsedCarbs = parseFloat(carbs) || 0;
