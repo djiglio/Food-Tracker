@@ -19,9 +19,18 @@
     padding-top: max(env(safe-area-inset-top, 0px), 16px);
   }
   .glass {
-    @apply bg-zinc-900/60 backdrop-blur-xl border border-white/10 shadow-lg;
+    @apply bg-zinc-900/40 backdrop-blur-2xl backdrop-saturate-150 border border-white/5 shadow-2xl;
   }
   .glass-header {
-    @apply bg-zinc-950/70 backdrop-blur-2xl border-b border-white/5;
+    @apply bg-zinc-950/50 backdrop-blur-3xl backdrop-saturate-150 border-b border-white/5;
+  }
+  .glass-pill {
+    @apply bg-zinc-900/60 backdrop-blur-2xl backdrop-saturate-150 border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.5)];
+  }
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-zinc-100 to-zinc-400;
+  }
+  .glow-primary {
+    @apply shadow-[0_0_20px_-3px_rgba(16,185,129,0.4)];
   }
 }

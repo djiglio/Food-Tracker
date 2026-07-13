@@ -111,7 +111,7 @@ export const DiaryDashboard: React.FC = () => {
           <ChevronLeft size={20} />
         </button>
         <div className="flex items-center gap-2">
-          <div className="font-bold text-lg text-white">
+          <div className="font-bold text-lg text-gradient">
             {new Date(currentDate).toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' })}
           </div>
           <button 
@@ -119,7 +119,7 @@ export const DiaryDashboard: React.FC = () => {
             className={`p-1.5 rounded-full transition-all active:scale-95 ${
               currentDate === new Date().toISOString().split('T')[0]
                 ? 'bg-brand-primary/20 text-brand-primary ring-1 ring-brand-primary/30 shadow-[0_0_10px_rgba(16,185,129,0.2)]'
-                : 'bg-zinc-800 text-zinc-400 hover:text-white'
+                : 'glass text-zinc-400 hover:text-white border-none'
             }`}
             title="Vai a oggi"
           >
@@ -128,7 +128,7 @@ export const DiaryDashboard: React.FC = () => {
         </div>
         <button 
           onClick={handleNextDay} 
-          className="p-2 text-zinc-400 hover:text-white active:scale-95 bg-zinc-900 rounded-full"
+          className="p-2 text-zinc-400 hover:text-white transition-transform active:scale-95 glass rounded-full border-none"
         >
           <ChevronRight size={20} />
         </button>
@@ -140,7 +140,7 @@ export const DiaryDashboard: React.FC = () => {
         {isLoading && <div className="h-1 bg-brand-primary/20 rounded overflow-hidden"><div className="h-full bg-brand-primary animate-pulse w-1/3"></div></div>}
 
         {/* Dashboard Compliance Kcal & Macros */}
-        <Card className="border-zinc-800/80 bg-zinc-900/60 shadow-lg relative overflow-hidden">
+        <Card className="relative overflow-hidden">
           <CardContent className="p-6">
             <div className="flex justify-between items-end mb-6">
               <div>
