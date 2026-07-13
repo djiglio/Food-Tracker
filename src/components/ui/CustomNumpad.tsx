@@ -13,9 +13,16 @@ export const CustomNumpad: React.FC<CustomNumpadProps> = ({ value, onChange, max
     if (key === 'del') {
       onChange(value.slice(0, -1));
     } else {
+      if (key === '.') {
+        if (value.includes('.')) return;
+        if (value === '' || value === '0') {
+          onChange('0.');
+          return;
+        }
+      }
       // Evita zero iniziale multiplo
       if (value === '0' && key === '0') return;
-      if (value === '0' && key !== '0') {
+      if (value === '0' && key !== '.') {
         onChange(key);
         return;
       }
@@ -37,7 +44,10 @@ export const CustomNumpad: React.FC<CustomNumpadProps> = ({ value, onChange, max
       {keys.map((k, i) => (
         <button
           key={i}
-          onClick={() => handlePress(k)}
+          onPointerDown={(e) => {
+            e.preventDefault();
+            handlePress(k);
+          }}
           className={cn(
             "h-14 rounded-2xl flex items-center justify-center text-2xl font-semibold transition-all active:scale-90",
             k === 'del' 

@@ -71,7 +71,7 @@ export const NumpadInput: React.FC<NumpadInputProps> = ({
           <div className="bg-zinc-950 rounded-t-3xl border-t border-zinc-800 p-6 pb-safe-overlay animate-in slide-in-from-bottom-full duration-300">
             
             <div className="flex justify-between items-start mb-6">
-              <h3 className="text-xl font-bold text-white">{label || placeholder || 'Inserisci valore'}</h3>
+              <h3 className="text-xl font-bold text-white">{label || 'Inserisci valore'}</h3>
               <button 
                 onClick={() => setIsOpen(false)} 
                 className="p-2 bg-zinc-900 rounded-full text-zinc-400 hover:text-white transition-colors"
