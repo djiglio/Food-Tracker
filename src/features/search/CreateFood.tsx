@@ -9,21 +9,22 @@ interface CreateFoodProps {
   onBack: () => void;
   onFoodCreated: (food: FoodEntity) => void;
   prefillBarcode?: string; // Nuova prop
+  existingFood?: FoodEntity;
 }
 
-export const CreateFood: React.FC<CreateFoodProps> = ({ onBack, onFoodCreated, prefillBarcode }) => {
-  const [name, setName] = useState('');
-  const [brand, setBrand] = useState('');
-  const [kcal, setKcal] = useState('');
-  const [pro, setPro] = useState('');
-  const [carbs, setCarbs] = useState('');
-  const [fat, setFat] = useState('');
+export const CreateFood: React.FC<CreateFoodProps> = ({ onBack, onFoodCreated, prefillBarcode, existingFood }) => {
+  const [name, setName] = useState(existingFood?.name || '');
+  const [brand, setBrand] = useState(existingFood?.brand || '');
+  const [kcal, setKcal] = useState(existingFood?.kcalPer100 !== undefined ? String(existingFood.kcalPer100) : '');
+  const [pro, setPro] = useState(existingFood?.proteinPer100 !== undefined ? String(existingFood.proteinPer100) : '');
+  const [carbs, setCarbs] = useState(existingFood?.carbsPer100 !== undefined ? String(existingFood.carbsPer100) : '');
+  const [fat, setFat] = useState(existingFood?.fatPer100 !== undefined ? String(existingFood.fatPer100) : '');
   const [error, setError] = useState('');
 
   // Nuovi state per porzioni opzionali
-  const [hasPortion, setHasPortion] = useState(false);
-  const [portionName, setPortionName] = useState('');
-  const [portionWeight, setPortionWeight] = useState('');
+  const [hasPortion, setHasPortion] = useState(!!existingFood?.defaultUnit);
+  const [portionName, setPortionName] = useState(existingFood?.defaultUnit || '');
+  const [portionWeight, setPortionWeight] = useState(existingFood?.defaultUnitAmount !== undefined ? String(existingFood.defaultUnitAmount) : '');
 
   const handleSave = async () => {
     if (!name.trim()) {
@@ -39,22 +40,24 @@ export const CreateFood: React.FC<CreateFoodProps> = ({ onBack, onFoodCreated, p
     let dUnit = 'g';
     let dAmount = 100;
 
-    if (hasPortion && portionName.trim() && parseFloat(portionWeight) > 0) {
-      dUnit = portionName.trim();
-      dAmount = parseFloat(portionWeight);
-    }
+    const parsedKcal = parseFloat(kcal) || 0;
+    const parsedPro = parseFloat(pro) || 0;
+    const parsedCarbs = parseFloat(carbs) || 0;
+    const parsedFat = parseFloat(fat) || 0;
+    const parsedPortionWeight = parseFloat(portionWeight) || 0;
 
     const newFood: FoodEntity = {
-      id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
+      id: existingFood ? existingFood.id : crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
       name: name.trim(),
       brand: brand.trim() || undefined,
-      kcalPer100: nKcal,
-      proteinPer100: nPro,
-      carbsPer100: nCarbs,
-      fatPer100: nFat,
-      defaultUnit: dUnit,
-      defaultUnitAmount: dAmount,
-      barcode: prefillBarcode, // Se l'utente arriva dallo scanner
+      kcalPer100: parsedKcal,
+      proteinPer100: parsedPro,
+      carbsPer100: parsedCarbs,
+      fatPer100: parsedFat,
+      barcode: prefillBarcode || existingFood?.barcode,
+      isFavorite: existingFood ? existingFood.isFavorite : false,
+      defaultUnit: hasPortion && portionName.trim() ? portionName.trim() : undefined,
+      defaultUnitAmount: hasPortion && parsedPortionWeight > 0 ? parsedPortionWeight : undefined,
     };
 
     try {

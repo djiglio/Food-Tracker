@@ -114,6 +114,12 @@ export const saveFood = async (food: FoodEntity): Promise<void> => {
   triggerDebouncedSync();
 };
 
+export const deleteFood = async (id: string): Promise<void> => {
+  const db = await initDB();
+  await db.delete('foods', id);
+  triggerDebouncedSync();
+};
+
 export const getFoodByBarcode = async (barcode: string): Promise<FoodEntity | undefined> => {
   const db = await initDB();
   const allFoods = await db.getAll('foods');

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Search, ArrowLeft, Plus, ChevronRight, ScanLine, ChefHat, Star } from 'lucide-react';
+import { Search, ArrowLeft, Plus, ChevronRight, ScanLine, ChefHat, Star, Trash2, Edit2 } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
-import { searchFoods, FoodEntity, getFoodByBarcode, saveFood } from '@/services/db';
+import { searchFoods, FoodEntity, getFoodByBarcode, saveFood, deleteFood } from '@/services/db';
+import { fetchOpenFoodFacts } from '@/services/openfoodfacts';
+import { SwipeableItem } from '@/components/ui/SwipeableItem';
 import { fetchOpenFoodFacts } from '@/services/openfoodfacts';
 import AddFoodDrawer from './AddFoodDrawer';
 import CreateFood from './CreateFood';
@@ -22,6 +24,17 @@ export const SearchDashboard: React.FC = () => {
   const [isScanning, setIsScanning] = useState(false);
   const [scannedBarcode, setScannedBarcode] = useState<string | undefined>(undefined);
   const [selectedFood, setSelectedFood] = useState<FoodEntity | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<FoodEntity | null>(null);
+  const [foodToEdit, setFoodToEdit] = useState<FoodEntity | undefined>(undefined);
+
+  const handleDeleteConfirm = async () => {
+    if (itemToDelete) {
+      await deleteFood(itemToDelete.id);
+      setItemToDelete(null);
+      // Aggiorna risultati
+      setResults(prev => prev.filter(f => f.id !== itemToDelete.id));
+    }
+  };
 
   // Debounced Search
   useEffect(() => {
@@ -86,19 +99,22 @@ export const SearchDashboard: React.FC = () => {
     });
   };
 
-  // Se siamo in modalità creazione semplice
   if (isCreating) {
     return (
       <CreateFood 
         prefillBarcode={scannedBarcode}
+        existingFood={foodToEdit}
         onBack={() => {
           setIsCreating(false);
           setScannedBarcode(undefined);
+          setFoodToEdit(undefined);
         }} 
         onFoodCreated={(newFood) => {
           setIsCreating(false);
           setScannedBarcode(undefined);
-          setSelectedFood(newFood);
+          setFoodToEdit(undefined);
+          // Ricarica risultati...
+          setQuery('');
         }} 
       />
     );
@@ -184,33 +200,45 @@ export const SearchDashboard: React.FC = () => {
             </div>
             
             {results.map((food) => (
-              <button 
+              <SwipeableItem
                 key={food.id}
-                onClick={() => setSelectedFood(food)}
-                className="w-full text-left p-4 bg-zinc-900/40 hover:bg-zinc-800/60 border border-zinc-800/80 rounded-2xl flex items-center justify-between transition-colors active:scale-95 group"
+                onSwipeLeft={() => setItemToDelete(food)}
+                onSwipeRight={() => {
+                  setFoodToEdit(food);
+                  setIsCreating(true);
+                }}
+                leftActionContent={<><Edit2 size={24} className="mr-3" /> Modifica</>}
+                rightActionContent={<>Elimina <Trash2 size={24} className="ml-3" /></>}
+                swipeThreshold={70}
+                maxSwipe={120}
               >
-                <div>
-                  <h3 className="font-semibold text-white leading-tight flex items-center gap-2">
-                    {food.name}
-                    {food.isFavorite && <Star size={12} className="text-amber-400 fill-amber-400" />}
-                  </h3>
-                  <div className="text-xs text-zinc-500 mt-1 flex items-center gap-2">
-                    {food.brand && <span className="bg-zinc-800 px-1.5 py-0.5 rounded text-[10px]">{food.brand}</span>}
-                    <span>{food.kcalPer100} kcal / 100g</span>
+                <div 
+                  onClick={() => setSelectedFood(food)}
+                  className="w-full text-left p-4 flex items-center justify-between cursor-pointer hover:bg-zinc-800/60 transition-colors"
+                >
+                  <div>
+                    <h3 className="font-semibold text-white leading-tight flex items-center gap-2">
+                      {food.name}
+                      {food.isFavorite && <Star size={12} className="text-amber-400 fill-amber-400" />}
+                    </h3>
+                    <div className="text-xs text-zinc-500 mt-1 flex items-center gap-2">
+                      {food.brand && <span className="bg-zinc-800 px-1.5 py-0.5 rounded text-[10px]">{food.brand}</span>}
+                      <span>{food.kcalPer100} kcal / 100g</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <button 
+                      onClick={(e) => toggleFavorite(e, food)}
+                      className="p-2 -mr-2 text-zinc-600 hover:text-amber-400 active:scale-95 transition-all"
+                    >
+                      <Star size={18} className={food.isFavorite ? "text-amber-400 fill-amber-400" : ""} />
+                    </button>
+                    <div className="text-zinc-600 group-hover:text-brand-primary transition-colors">
+                      <ChevronRight size={20} />
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <button 
-                    onClick={(e) => toggleFavorite(e, food)}
-                    className="p-2 -mr-2 text-zinc-600 hover:text-amber-400 active:scale-95 transition-all"
-                  >
-                    <Star size={18} className={food.isFavorite ? "text-amber-400 fill-amber-400" : ""} />
-                  </button>
-                  <div className="text-zinc-600 group-hover:text-brand-primary transition-colors">
-                    <ChevronRight size={20} />
-                  </div>
-                </div>
-              </button>
+              </SwipeableItem>
             ))}
           </>
         )}
@@ -222,6 +250,22 @@ export const SearchDashboard: React.FC = () => {
         targetMealId={targetMealId} 
         onClose={() => setSelectedFood(null)} 
       />
+
+      {/* Modal Conferma Eliminazione */}
+      {itemToDelete && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-3xl w-full max-w-sm shadow-2xl animate-in zoom-in-95 duration-200">
+            <h3 className="text-xl font-bold text-white mb-2">Elimina Alimento</h3>
+            <p className="text-zinc-400 mb-6 text-sm">
+              Sei sicuro di voler eliminare definitivamente "{itemToDelete.name}"? Questa azione non può essere annullata.
+            </p>
+            <div className="flex gap-3">
+              <Button variant="ghost" fullWidth onClick={() => setItemToDelete(null)}>Annulla</Button>
+              <Button variant="danger" fullWidth onClick={handleDeleteConfirm}>Elimina</Button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
