@@ -153,15 +153,17 @@ export const Onboarding: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-[100dvh] bg-zinc-950 p-6 pb-safe-overlay overflow-y-auto pt-safe">
-      <div className="flex-1 flex flex-col justify-center max-w-md w-full mx-auto space-y-6">
-        
+    <div className="flex flex-col h-screen bg-zinc-950 p-6 pb-safe-overlay overflow-hidden">
+      <div className="sticky top-0 z-40 bg-zinc-950 pt-safe pb-6 w-full -mx-6 px-6">
         {/* Progress */}
-        <div className="flex space-x-2 w-full mb-8">
+        <div className="flex space-x-2 w-full max-w-md mx-auto">
           {[1, 2, 3, 4, 5].map((i) => (
             <div key={i} className={cn("h-1.5 flex-1 rounded-full transition-colors", i <= step ? "bg-brand-primary" : "bg-zinc-800")} />
           ))}
         </div>
+      </div>
+      
+      <div className="flex-1 flex flex-col justify-center max-w-md w-full mx-auto space-y-6 overflow-y-auto pb-8">
 
         <Card className="border-none bg-zinc-900/50 shadow-2xl relative overflow-hidden">
           

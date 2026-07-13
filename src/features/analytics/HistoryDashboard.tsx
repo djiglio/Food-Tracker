@@ -175,8 +175,8 @@ export const HistoryDashboard: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-full bg-zinc-950 pt-safe">
-      <header className="px-4 py-6">
+    <div className="flex flex-col pb-8">
+      <header className="sticky top-0 z-40 glass-header px-4 pb-3 pt-safe mb-4">
         <h1 className="text-2xl font-bold tracking-tight text-white">Analytics</h1>
         <p className="text-zinc-400 text-sm">Il quadro completo dei tuoi progressi.</p>
       </header>

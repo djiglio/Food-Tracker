@@ -38,12 +38,13 @@ export const ProfileDashboard: React.FC = () => {
   const { dailyTarget, meals, goal } = activeTarget;
 
   return (
-    <div className="p-4 space-y-6 pb-8 pt-safe">
-      <header className="mb-2">
+    <div className="flex flex-col pb-8">
+      <header className="sticky top-0 z-40 glass-header px-4 pb-3 pt-safe mb-4">
         <h1 className="text-2xl font-bold tracking-tight">Profilo & Obiettivi</h1>
         <p className="text-zinc-400 text-sm">Dashboard metabolica in tempo reale.</p>
       </header>
 
+      <div className="px-4 space-y-6">
       {/* Target Principale */}
       <Card className="bg-gradient-to-br from-zinc-850 to-zinc-900 border-brand-primary/20">
         <CardContent className="pt-6 text-center relative overflow-hidden">
@@ -224,6 +225,7 @@ export const ProfileDashboard: React.FC = () => {
         <Button variant="secondary" fullWidth onClick={handleRecalculate}>
           Resetta Profilo & Ricalcola
         </Button>
+      </div>
       </div>
     </div>
   );
