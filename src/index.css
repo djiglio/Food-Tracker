@@ -5,12 +5,12 @@
 @layer base {
   /* Impostazioni tipografiche base e reset PWA */
   html, body {
-    @apply h-full w-full overflow-hidden overscroll-none;
+    @apply min-h-screen w-full overflow-hidden overscroll-none;
     -webkit-tap-highlight-color: transparent;
   }
   
   #root {
-    @apply h-full w-full flex flex-col;
+    @apply min-h-screen w-full flex flex-col;
   }
 }
 
