@@ -163,9 +163,9 @@ export const Onboarding: React.FC = () => {
         </div>
       </div>
       
-      <div className="flex-1 flex flex-col justify-center max-w-md w-full mx-auto space-y-6 overflow-y-auto pb-8">
+      <div className="flex-1 flex flex-col max-w-md w-full mx-auto space-y-6 overflow-y-auto pb-8 pt-4">
 
-        <Card className="border-none bg-zinc-900/50 shadow-2xl relative overflow-hidden">
+        <Card className="border-none bg-zinc-900/50 shadow-2xl relative overflow-hidden my-auto shrink-0">
           
           {step === 1 && (
             <CardContent className="pt-6 space-y-6">
