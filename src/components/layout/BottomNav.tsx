@@ -12,7 +12,7 @@ const BottomNav: React.FC = () => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 glass !border-b-0 !border-l-0 !border-r-0">
+    <nav className="fixed left-0 right-0 z-50 glass !border-b-0 !border-l-0 !border-r-0" style={{ bottom: 'calc(-1 * env(safe-area-inset-bottom, 0px))' }}>
       <div className="flex items-center justify-around h-[4.5rem] px-2">
         {navItems.map((item) => (
           <NavLink
