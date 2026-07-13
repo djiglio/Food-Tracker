@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { useUserStore } from '@/store/userStore';
 import { useDiaryStore } from '@/store/diaryStore';
 import { getMacroTargetForDate } from '@/core/metabolism';
-import { ChevronLeft, ChevronRight, Plus, Droplet, Scale, Copy, Trash2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Droplet, Scale, Copy, Trash2, Calendar } from 'lucide-react';
 import { NumpadInput } from '@/components/ui/NumpadInput';
 import { CopyMealModal } from './CopyMealModal';
 import { getWeightLogs, saveWeightLog } from '@/services/db';
@@ -110,8 +110,21 @@ export const DiaryDashboard: React.FC = () => {
         <button onClick={handlePrevDay} className="p-2 text-zinc-400 hover:text-white active:scale-95 bg-zinc-900 rounded-full">
           <ChevronLeft size={20} />
         </button>
-        <div className="font-bold text-lg text-white">
-          {new Date(currentDate).toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' })}
+        <div className="flex items-center gap-2">
+          <div className="font-bold text-lg text-white">
+            {new Date(currentDate).toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' })}
+          </div>
+          <button 
+            onClick={() => setCurrentDate(new Date().toISOString().split('T')[0])}
+            className={`p-1.5 rounded-full transition-all active:scale-95 ${
+              currentDate === new Date().toISOString().split('T')[0]
+                ? 'bg-brand-primary/20 text-brand-primary ring-1 ring-brand-primary/30 shadow-[0_0_10px_rgba(16,185,129,0.2)]'
+                : 'bg-zinc-800 text-zinc-400 hover:text-white'
+            }`}
+            title="Vai a oggi"
+          >
+            <Calendar size={16} />
+          </button>
         </div>
         <button 
           onClick={handleNextDay} 
