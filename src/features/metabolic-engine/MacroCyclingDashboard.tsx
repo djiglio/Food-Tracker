@@ -244,10 +244,12 @@ export const MacroCyclingDashboard: React.FC = () => {
       </div>
       
       {/* Footer Assoluto */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-zinc-950 via-zinc-950 to-transparent">
-        <Button fullWidth variant="primary" size="lg" onClick={handleSave} className="shadow-xl shadow-brand-primary/20">
-          <Save size={20} className="mr-2" /> Salva Impostazioni
-        </Button>
+      <div className="fixed bottom-0 left-0 right-0 p-4 pb-28 bg-gradient-to-t from-zinc-950 via-zinc-950/90 to-transparent pointer-events-none z-40">
+        <div className="pointer-events-auto max-w-md mx-auto">
+          <Button fullWidth variant="primary" size="lg" onClick={handleSave} className="shadow-xl shadow-brand-primary/20">
+            <Save size={20} className="mr-2" /> Salva Impostazioni
+          </Button>
+        </div>
       </div>
 
     </div>
