@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
-import BottomNav from './BottomNav';
 import { useAppStore } from '@/store/appStore';
 
 const Layout: React.FC = () => {
@@ -21,11 +20,10 @@ const Layout: React.FC = () => {
 
   return (
     <div className="flex flex-col h-[100dvh] bg-zinc-950 text-zinc-50 overflow-hidden relative">
-      <main className="flex-1 overflow-y-auto pb-nav-safe">
+      <main className="flex-1 overflow-y-auto pb-safe">
         {/* L'Outlet renderizza le route figlie */}
         <Outlet />
       </main>
-      <BottomNav />
     </div>
   );
 };
