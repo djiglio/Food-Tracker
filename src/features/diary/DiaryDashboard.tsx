@@ -115,8 +115,7 @@ export const DiaryDashboard: React.FC = () => {
         </div>
         <button 
           onClick={handleNextDay} 
-          disabled={currentDate >= new Date().toISOString().split('T')[0]} 
-          className="p-2 text-zinc-400 hover:text-white active:scale-95 bg-zinc-900 rounded-full disabled:opacity-30 disabled:pointer-events-none"
+          className="p-2 text-zinc-400 hover:text-white active:scale-95 bg-zinc-900 rounded-full"
         >
           <ChevronRight size={20} />
         </button>
