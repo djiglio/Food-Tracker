@@ -366,15 +366,14 @@ export const DiaryDashboard: React.FC = () => {
       {/* Copy Modal */}
       {copyTargetMeal && (
         <CopyMealModal 
-        isOpen={copyModalOpen}
-        onClose={() => setCopyModalOpen(false)}
-        targetDate={currentDate}
-        targetMealId={copyTargetMeal?.id || ''}
-        targetMealName={copyTargetMeal?.name || ''}
-        onConfirmCopy={async (date, sourceId) => {
-          await copyMealFromHistory(date, sourceId, copyTargetMeal.id);
-        }}
-      />
+          isOpen={copyModalOpen}
+          onClose={() => setCopyModalOpen(false)}
+          targetMealId={copyTargetMeal.id}
+          targetMealName={copyTargetMeal.name}
+          onConfirmCopy={async (date, sourceId) => {
+            await copyMealFromHistory(date, sourceId, copyTargetMeal.id);
+          }}
+        />
       )}
 
       {editingItem && createPortal(
