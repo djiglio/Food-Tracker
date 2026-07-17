@@ -12,6 +12,7 @@ interface DiaryState {
   addWater: (amountMl: number) => Promise<void>;
   addFoodToMeal: (mealId: string, item: FoodLogItem) => Promise<void>;
   removeFoodFromMeal: (mealId: string, itemId: string) => Promise<void>;
+  updateFoodInMeal: (mealId: string, item: FoodLogItem) => Promise<void>;
   copyMealFromHistory: (sourceDate: string, sourceMealId: string, targetMealId: string) => Promise<void>;
 }
 
@@ -87,6 +88,25 @@ export const useDiaryStore = create<DiaryState>((set, get) => ({
       meals: {
         ...dayRecord.meals,
         [mealId]: { items: currentMeal.items.filter(i => i.id !== itemId) }
+      }
+    };
+
+    set({ dayRecord: newRecord });
+    await saveDayRecord(newRecord);
+  },
+
+  updateFoodInMeal: async (mealId, item) => {
+    const { dayRecord } = get();
+    if (!dayRecord) return;
+
+    const currentMeal = dayRecord.meals[mealId];
+    if (!currentMeal) return;
+
+    const newRecord = {
+      ...dayRecord,
+      meals: {
+        ...dayRecord.meals,
+        [mealId]: { items: currentMeal.items.map(i => i.id === item.id ? item : i) }
       }
     };
 

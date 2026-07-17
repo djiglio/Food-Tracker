@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { useUserStore } from '@/store/userStore';
 import { useDiaryStore } from '@/store/diaryStore';
 import { getMacroTargetForDate } from '@/core/metabolism';
-import { ChevronLeft, ChevronRight, Plus, Droplet, Scale, Copy, Trash2, Calendar } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Droplet, Scale, Copy, Trash2, Calendar, X, Check } from 'lucide-react';
 import { NumpadInput } from '@/components/ui/NumpadInput';
+import CustomNumpad from '@/components/ui/CustomNumpad';
 import { CopyMealModal } from './CopyMealModal';
-import { getWeightLogs, saveWeightLog } from '@/services/db';
+import { getWeightLogs, saveWeightLog, FoodLogItem } from '@/services/db';
 
 export const DiaryDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -22,7 +24,54 @@ export const DiaryDashboard: React.FC = () => {
   const isLoading = useDiaryStore((state) => state.isLoading);
   const addWater = useDiaryStore((state) => state.addWater);
   const removeFoodFromMeal = useDiaryStore((state) => state.removeFoodFromMeal);
+  const updateFoodInMeal = useDiaryStore((state) => state.updateFoodInMeal);
   const copyMealFromHistory = useDiaryStore((state) => state.copyMealFromHistory);
+
+  // Edit Item State (Long Press)
+  const [editingItem, setEditingItem] = useState<{ mealId: string, item: FoodLogItem } | null>(null);
+  const [editingAmountStr, setEditingAmountStr] = useState<string>('');
+  const pressTimer = useRef<NodeJS.Timeout | null>(null);
+
+  const handlePressStart = (mealId: string, item: FoodLogItem) => {
+    pressTimer.current = setTimeout(() => {
+      if (navigator.vibrate) navigator.vibrate(50);
+      setEditingItem({ mealId, item });
+      setEditingAmountStr(item.amount.toString());
+    }, 400); // 400ms hold
+  };
+
+  const handlePressEnd = () => {
+    if (pressTimer.current) {
+      clearTimeout(pressTimer.current);
+      pressTimer.current = null;
+    }
+  };
+
+  const handleSaveItemEdit = () => {
+    if (!editingItem) return;
+    const newAmount = parseFloat(editingAmountStr);
+    if (isNaN(newAmount) || newAmount <= 0) {
+      setEditingItem(null);
+      return;
+    }
+    
+    const oldAmount = editingItem.item.amount;
+    const ratio = newAmount / oldAmount;
+
+    const updatedItem = {
+      ...editingItem.item,
+      amount: newAmount,
+      macros: {
+        kcal: editingItem.item.macros.kcal * ratio,
+        proteinG: editingItem.item.macros.proteinG * ratio,
+        carbsG: editingItem.item.macros.carbsG * ratio,
+        fatG: editingItem.item.macros.fatG * ratio,
+      }
+    };
+
+    updateFoodInMeal(editingItem.mealId, updatedItem);
+    setEditingItem(null);
+  };
 
   // Modal State
   const [copyModalOpen, setCopyModalOpen] = useState(false);
@@ -259,7 +308,19 @@ export const DiaryDashboard: React.FC = () => {
                       <div className="p-4 text-center text-sm text-zinc-600 italic">Nessun alimento.</div>
                     ) : (
                       items.map(item => (
-                        <div key={item.id} className="flex justify-between items-center p-3 hover:bg-zinc-800/30 rounded-xl transition-colors group">
+                        <div 
+                          key={item.id} 
+                          className="flex justify-between items-center p-3 hover:bg-zinc-800/30 rounded-xl transition-colors group select-none touch-pan-y"
+                          onPointerDown={() => handlePressStart(mealConfig.id, item)}
+                          onPointerUp={handlePressEnd}
+                          onPointerLeave={handlePressEnd}
+                          onPointerCancel={handlePressEnd}
+                          onContextMenu={(e) => {
+                            if (('ontouchstart' in window) || navigator.maxTouchPoints > 0) {
+                              e.preventDefault();
+                            }
+                          }}
+                        >
                           <div>
                             <div className="font-medium text-sm text-zinc-200">{item.name}</div>
                             <div className="text-[11px] text-zinc-500"><span className="font-bold text-zinc-300">{item.amount} {item.unit}</span> • P: {item.macros.proteinG}g C: {item.macros.carbsG}g F: {item.macros.fatG}g</div>
@@ -305,14 +366,61 @@ export const DiaryDashboard: React.FC = () => {
       {/* Copy Modal */}
       {copyTargetMeal && (
         <CopyMealModal 
-          isOpen={copyModalOpen}
-          onClose={() => setCopyModalOpen(false)}
-          targetMealId={copyTargetMeal.id}
-          targetMealName={copyTargetMeal.name}
-          onConfirmCopy={async (date, sourceId) => {
-            await copyMealFromHistory(date, sourceId, copyTargetMeal.id);
-          }}
-        />
+        isOpen={copyModalOpen}
+        onClose={() => setCopyModalOpen(false)}
+        targetDate={currentDate}
+        targetMealId={copyTargetMeal?.id || ''}
+        targetMealName={copyTargetMeal?.name || ''}
+        onConfirmCopy={async (date, sourceId) => {
+          await copyMealFromHistory(date, sourceId, copyTargetMeal.id);
+        }}
+      />
+      )}
+
+      {editingItem && createPortal(
+        <div className="fixed inset-0 z-[120] flex flex-col justify-end bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-zinc-950 rounded-t-3xl border-t border-zinc-800 p-6 pb-safe-overlay animate-in slide-in-from-bottom-full duration-300">
+            
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <h3 className="text-xl font-bold text-white">Modifica Quantità</h3>
+                <div className="text-sm text-zinc-400">{editingItem.item.name}</div>
+              </div>
+              <button 
+                onClick={() => setEditingItem(null)} 
+                className="p-2 bg-zinc-900 rounded-full text-zinc-400 hover:text-white transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="bg-zinc-900/50 rounded-2xl p-4 mb-6 border border-zinc-800 flex items-center justify-center min-h-[100px] relative">
+              <div className="text-5xl font-black text-brand-primary tracking-tight">
+                {editingAmountStr || '0'}
+              </div>
+              <span className="absolute right-4 bottom-4 text-zinc-500 font-bold">{editingItem.item.unit}</span>
+            </div>
+
+            <div className="mb-6">
+              <CustomNumpad 
+                value={editingAmountStr} 
+                onChange={setEditingAmountStr} 
+                maxLength={6} 
+              />
+            </div>
+
+            <Button 
+              variant="primary" 
+              fullWidth 
+              size="lg" 
+              onClick={handleSaveItemEdit}
+            >
+              <Check className="mr-2" size={20} />
+              Salva Modifiche
+            </Button>
+          </div>
+        </div>,
+        document.body
       )}
 
     </div>
