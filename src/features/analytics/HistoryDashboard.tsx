@@ -39,9 +39,8 @@ export const HistoryDashboard: React.FC = () => {
       const allHistory = await db.getAll('history');
       
       const unifiedData: UnifiedChartData[] = [];
-      const today = new Date();
-      today.setHours(0,0,0,0);
-      const todayStr = new Date().toISOString().split('T')[0];
+      const now = new Date();
+      const todayStr = now.toISOString().split('T')[0];
 
       const cMap: Record<string, ComplianceStatus> = {};
 
@@ -74,26 +73,26 @@ export const HistoryDashboard: React.FC = () => {
 
       // 2. Calcolo della Streak
       let streak = 0;
-      let d = new Date(today);
+      let d = new Date();
       let dateCursor = todayStr;
       
       // Se oggi non abbiamo ancora mangiato, iniziamo a contare da ieri
       if (!cMap[todayStr] || cMap[todayStr] === 'empty') {
-        d.setDate(d.getDate() - 1);
+        d.setUTCDate(d.getUTCDate() - 1);
         dateCursor = d.toISOString().split('T')[0];
       }
 
       while (cMap[dateCursor] === 'compliant') {
         streak++;
-        d.setDate(d.getDate() - 1);
+        d.setUTCDate(d.getUTCDate() - 1);
         dateCursor = d.toISOString().split('T')[0];
       }
       setCurrentStreak(streak);
 
       // 3. Carichiamo i dati per il grafico (ultimi 14 giorni)
       for (let i = 13; i >= 0; i--) {
-        const dChart = new Date(today);
-        dChart.setDate(dChart.getDate() - i);
+        const dChart = new Date();
+        dChart.setUTCDate(dChart.getUTCDate() - i);
         const dateStr = dChart.toISOString().split('T')[0];
         
         const record = allHistory.find(r => r.date === dateStr);
@@ -110,14 +109,20 @@ export const HistoryDashboard: React.FC = () => {
         }
 
         // --- 2. Peso ---
-        // Se c'è un log per questa data, usalo. Altrimenti lascia null (la linea si collegherà automaticamente)
         const dayWeightLog = logs.find(l => l.date === dateStr);
-        const weightValue = dayWeightLog ? dayWeightLog.weightKg : null;
+        let weightValue = null;
+        if (dayWeightLog) {
+          weightValue = dayWeightLog.weightKg;
+        } else {
+          // Trova il peso più recente precedente a questa data
+          const pastLog = logs.slice().reverse().find(l => l.date <= dateStr);
+          if (pastLog) weightValue = pastLog.weightKg;
+        }
 
         unifiedData.push({
           dateFull: dateStr,
-          dateLabel: `${d.getDate()}/${d.getMonth()+1}`,
-          kcal: Math.round(consumedKcal) || 0, // se non ha mangiato, 0 (oppure potremmo ometterlo)
+          dateLabel: `${dChart.getUTCDate()}/${dChart.getUTCMonth()+1}`,
+          kcal: Math.round(consumedKcal) || 0,
           targetKcal,
           weightKg: weightValue
         });
