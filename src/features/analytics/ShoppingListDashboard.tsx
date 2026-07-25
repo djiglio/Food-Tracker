@@ -32,12 +32,11 @@ export const ShoppingListDashboard: React.FC = () => {
       const allFoods = await db.getAll('foods');
       const foodsMap = new Map(allFoods.map(f => [f.id, f]));
 
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const todayStr = today.toISOString().split('T')[0];
+      const now = new Date();
+      const todayStr = now.toISOString().split('T')[0];
 
-      const targetDate = new Date(today);
-      targetDate.setDate(targetDate.getDate() + days - 1);
+      const targetDate = new Date();
+      targetDate.setUTCDate(targetDate.getUTCDate() + days - 1);
       const targetDateStr = targetDate.toISOString().split('T')[0];
 
       const futureHistory = history.filter(r => r.date >= todayStr && r.date <= targetDateStr);
