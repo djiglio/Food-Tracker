@@ -260,17 +260,19 @@ export const DiaryDashboard: React.FC = () => {
                   Modifica
                 </button>
               ) : (
-                <div className="flex gap-1">
-                  <NumpadInput 
-                    value={newWeightStr}
-                    onChange={(val) => setNewWeightStr(val)}
-                    placeholder="kg"
-                    className="w-14 bg-zinc-900 border border-zinc-700 text-white text-xs px-1 py-1 rounded-lg text-center"
-                  />
+                <div className="flex gap-2 h-7 mt-0.5">
+                  <div className="flex-1 min-w-0">
+                    <NumpadInput 
+                      value={newWeightStr}
+                      onChange={(val) => setNewWeightStr(val)}
+                      placeholder="kg"
+                      className="w-full h-7 bg-zinc-900 border border-zinc-700 text-white text-xs px-2 rounded-lg text-center font-semibold"
+                    />
+                  </div>
                   <button 
                     onClick={handleSaveWeight} 
                     disabled={!newWeightStr}
-                    className="flex-1 bg-brand-primary text-black font-bold py-1 rounded-lg text-xs active:scale-95 transition-all"
+                    className="w-12 shrink-0 h-7 bg-brand-primary text-black font-bold rounded-lg text-xs active:scale-95 transition-all flex items-center justify-center"
                   >
                     OK
                   </button>
