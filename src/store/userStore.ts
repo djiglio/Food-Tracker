@@ -19,7 +19,7 @@ interface UserState {
   setProfile: (profile: UserMetabolicProfile) => void;
   addTargetVersion: (version: TargetVersion) => void;
   getActiveTarget: (date: string) => TargetVersion | null;
-  logout: () => void;
+  resetProfile: () => void;
 }
 
 export const useUserStore = create<UserState>()(
@@ -63,8 +63,7 @@ export const useUserStore = create<UserState>()(
         // Fallback: se chiediamo una data antecedente al primissimo target, restituiamo il primo
         return history[0];
       },
-      
-      logout: () => set({ profile: null, bmr: null, tdee: null, targetHistory: [] }),
+      resetProfile: () => set({ profile: null, bmr: null, tdee: null }),
     }),
     {
       name: 'food-tracker-user-storage',

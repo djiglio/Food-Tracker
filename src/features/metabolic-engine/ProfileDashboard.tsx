@@ -10,7 +10,7 @@ import { loginWithGoogle, logoutGoogle, auth } from '@/services/firebase';
 export const ProfileDashboard: React.FC = () => {
   const profile = useUserStore((state) => state.profile);
   const getActiveTarget = useUserStore((state) => state.getActiveTarget);
-  const logout = useUserStore((state) => state.logout);
+  const resetProfile = useUserStore((state) => state.resetProfile);
   const navigate = useNavigate();
   const [user, setUser] = React.useState(auth.currentUser);
 
@@ -31,7 +31,7 @@ export const ProfileDashboard: React.FC = () => {
   }
 
   const handleRecalculate = () => {
-    logout();
+    resetProfile();
     navigate('/onboarding');
   };
 
