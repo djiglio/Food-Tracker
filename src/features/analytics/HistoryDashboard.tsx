@@ -29,8 +29,9 @@ export const HistoryDashboard: React.FC = () => {
 
   const [newWeight, setNewWeight] = useState('');
   const [isLogging, setIsLogging] = useState(false);
+  const [chartDays, setChartDays] = useState(7);
 
-  const loadData = async () => {
+  const loadData = async (daysToLoad: number) => {
     try {
       const logs = await getWeightLogs();
       setWeightLogs(logs);
@@ -89,8 +90,8 @@ export const HistoryDashboard: React.FC = () => {
       }
       setCurrentStreak(streak);
 
-      // 3. Carichiamo i dati per il grafico (ultimi 14 giorni)
-      for (let i = 13; i >= 0; i--) {
+      // 3. Carichiamo i dati per il grafico
+      for (let i = daysToLoad - 1; i >= 0; i--) {
         const dChart = new Date();
         dChart.setUTCDate(dChart.getUTCDate() - i);
         const dateStr = dChart.toISOString().split('T')[0];
@@ -135,8 +136,8 @@ export const HistoryDashboard: React.FC = () => {
   };
 
   useEffect(() => {
-    loadData();
-  }, []);
+    loadData(chartDays);
+  }, [chartDays]);
 
   const handleSaveWeight = async () => {
     const w = parseFloat(newWeight);
@@ -145,7 +146,7 @@ export const HistoryDashboard: React.FC = () => {
       await saveWeightLog(today, w);
       setNewWeight('');
       setIsLogging(false);
-      loadData();
+      loadData(chartDays);
     }
   };
 
@@ -231,18 +232,32 @@ export const HistoryDashboard: React.FC = () => {
             <div className="flex justify-between items-start mb-6">
               <div className="flex items-center gap-2">
                 <Activity size={18} className="text-zinc-100" />
-                <h3 className="text-sm font-bold tracking-widest uppercase text-zinc-500">Correlazione (Ultimi 14 gg)</h3>
+                <h3 className="text-sm font-bold tracking-widest uppercase text-zinc-500">Correlazione</h3>
               </div>
               
-              {weightLogs.length >= 2 && (
-                <div className={cn(
-                  "flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold",
-                  weightDelta < 0 ? "bg-brand-primary/20 text-brand-primary" : weightDelta > 0 ? "bg-red-500/20 text-red-500" : "bg-zinc-800 text-zinc-400"
-                )}>
-                  {weightDelta < 0 ? <TrendingDown size={14} /> : weightDelta > 0 ? <TrendingUp size={14} /> : null}
-                  {weightDelta > 0 ? '+' : ''}{weightDelta.toFixed(1)} kg
-                </div>
-              )}
+              <div className="flex items-center gap-2">
+                <select 
+                  value={chartDays} 
+                  onChange={(e) => setChartDays(Number(e.target.value))}
+                  className="bg-zinc-800 border-zinc-700 text-xs text-white rounded-lg px-2 py-1 outline-none appearance-none cursor-pointer"
+                >
+                  <option value={7}>Ultima sett.</option>
+                  <option value={30}>Ultimo mese</option>
+                  <option value={90}>Ultimi 3 mesi</option>
+                  <option value={180}>Ultimi 6 mesi</option>
+                  <option value={365}>Ultimo anno</option>
+                </select>
+
+                {weightLogs.length >= 2 && (
+                  <div className={cn(
+                    "flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold",
+                    weightDelta < 0 ? "bg-brand-primary/20 text-brand-primary" : weightDelta > 0 ? "bg-red-500/20 text-red-500" : "bg-zinc-800 text-zinc-400"
+                  )}>
+                    {weightDelta < 0 ? <TrendingDown size={14} /> : weightDelta > 0 ? <TrendingUp size={14} /> : null}
+                    {weightDelta > 0 ? '+' : ''}{weightDelta.toFixed(1)} kg
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="h-64 w-full">
