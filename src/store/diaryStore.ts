@@ -9,7 +9,6 @@ interface DiaryState {
   // Actions
   setCurrentDate: (date: string) => void;
   loadDay: (date: string, activeTargetId: string) => Promise<void>;
-  addWater: (amountMl: number) => Promise<void>;
   addFoodToMeal: (mealId: string, item: FoodLogItem) => Promise<void>;
   removeFoodFromMeal: (mealId: string, itemId: string) => Promise<void>;
   updateFoodInMeal: (mealId: string, item: FoodLogItem) => Promise<void>;
@@ -19,7 +18,6 @@ interface DiaryState {
 const getEmptyDayRecord = (date: string, targetVersionId: string): DiaryDayRecord => ({
   date,
   targetVersionId,
-  waterConsumedMl: 0,
   meals: {}
 });
 
@@ -44,19 +42,6 @@ export const useDiaryStore = create<DiaryState>((set, get) => ({
       console.error("Failed to load diary day", error);
       set({ isLoading: false });
     }
-  },
-
-  addWater: async (amountMl) => {
-    const { dayRecord } = get();
-    if (!dayRecord) return;
-    
-    const newRecord = { 
-      ...dayRecord, 
-      waterConsumedMl: Math.max(0, dayRecord.waterConsumedMl + amountMl) 
-    };
-    
-    set({ dayRecord: newRecord });
-    await saveDayRecord(newRecord);
   },
 
   addFoodToMeal: async (mealId, item) => {

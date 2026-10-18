@@ -6,11 +6,10 @@ import { Button } from '@/components/ui/Button';
 import { useUserStore } from '@/store/userStore';
 import { useDiaryStore } from '@/store/diaryStore';
 import { getMacroTargetForDate } from '@/core/metabolism';
-import { ChevronLeft, ChevronRight, Plus, Droplet, Scale, Copy, Trash2, Calendar, X, Check } from 'lucide-react';
-import { NumpadInput } from '@/components/ui/NumpadInput';
+import { ChevronLeft, ChevronRight, Plus, Copy, Trash2, Calendar, X, Check } from 'lucide-react';
 import CustomNumpad from '@/components/ui/CustomNumpad';
 import { CopyMealModal } from './CopyMealModal';
-import { getWeightLogs, saveWeightLog, FoodLogItem } from '@/services/db';
+import { FoodLogItem } from '@/services/db';
 
 export const DiaryDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -22,7 +21,6 @@ export const DiaryDashboard: React.FC = () => {
   const loadDay = useDiaryStore((state) => state.loadDay);
   const dayRecord = useDiaryStore((state) => state.dayRecord);
   const isLoading = useDiaryStore((state) => state.isLoading);
-  const addWater = useDiaryStore((state) => state.addWater);
   const removeFoodFromMeal = useDiaryStore((state) => state.removeFoodFromMeal);
   const updateFoodInMeal = useDiaryStore((state) => state.updateFoodInMeal);
   const copyMealFromHistory = useDiaryStore((state) => state.copyMealFromHistory);
@@ -77,37 +75,14 @@ export const DiaryDashboard: React.FC = () => {
   const [copyModalOpen, setCopyModalOpen] = useState(false);
   const [copyTargetMeal, setCopyTargetMeal] = useState<{id: string, name: string} | null>(null);
 
-  // Weight State
-  const [dayWeight, setDayWeight] = useState<number | null>(null);
-  const [isLoggingWeight, setIsLoggingWeight] = useState(false);
-  const [newWeightStr, setNewWeightStr] = useState('');
-
   // Ottieni il target storico valido per il giorno visualizzato
   const activeTarget = getActiveTarget(currentDate);
-
-  const fetchWeight = async (dateStr: string) => {
-    const logs = await getWeightLogs();
-    const log = logs.find(l => l.date === dateStr);
-    setDayWeight(log ? log.weightKg : null);
-  };
 
   useEffect(() => {
     if (profile && activeTarget) {
       loadDay(currentDate, activeTarget.id);
-      fetchWeight(currentDate);
-      setIsLoggingWeight(false);
-      setNewWeightStr('');
     }
   }, [currentDate, profile, activeTarget, loadDay]);
-
-  const handleSaveWeight = async () => {
-    const w = parseFloat(newWeightStr);
-    if (w > 0) {
-      await saveWeightLog(currentDate, w);
-      setDayWeight(w);
-      setIsLoggingWeight(false);
-    }
-  };
 
   if (!profile || !activeTarget) {
     return (
@@ -215,72 +190,6 @@ export const DiaryDashboard: React.FC = () => {
             </div>
           </CardContent>
         </Card>
-
-        {/* Water & Weight Tracker */}
-        <div className="grid grid-cols-2 gap-3">
-          {/* Water Tracker */}
-          <Card className="border-blue-900/30 bg-blue-950/10">
-            <CardContent className="p-3">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="bg-blue-500/20 p-2 rounded-full text-blue-500">
-                  <Droplet size={16} />
-                </div>
-                <div>
-                  <div className="text-[10px] text-blue-400/70 font-semibold uppercase tracking-wider">Idratazione</div>
-                  <div className="text-lg font-bold text-white leading-none">{dayRecord?.waterConsumedMl || 0} <span className="text-xs text-zinc-500">ml</span></div>
-                </div>
-              </div>
-              <div className="flex gap-1">
-                <button onClick={() => addWater(250)} className="flex-1 bg-blue-900/50 hover:bg-blue-800 border border-blue-800 text-blue-300 font-bold py-1.5 rounded-lg text-xs active:scale-95 transition-all">+250</button>
-                <button onClick={() => addWater(500)} className="flex-1 bg-blue-900/50 hover:bg-blue-800 border border-blue-800 text-blue-300 font-bold py-1.5 rounded-lg text-xs active:scale-95 transition-all">+500</button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Weight Tracker */}
-          <Card className="border-brand-primary/30 bg-brand-primary/5">
-            <CardContent className="p-3">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="bg-brand-primary/20 p-2 rounded-full text-brand-primary">
-                  <Scale size={16} />
-                </div>
-                <div>
-                  <div className="text-[10px] text-brand-primary/70 font-semibold uppercase tracking-wider">Peso</div>
-                  <div className="text-lg font-bold text-white leading-none">
-                    {dayWeight ? dayWeight : '--'} <span className="text-xs text-zinc-500">kg</span>
-                  </div>
-                </div>
-              </div>
-              
-              {!isLoggingWeight ? (
-                <button 
-                  onClick={() => setIsLoggingWeight(true)} 
-                  className="w-full bg-brand-primary/20 hover:bg-brand-primary/30 border border-brand-primary/50 text-brand-primary font-bold py-1.5 rounded-lg text-xs active:scale-95 transition-all"
-                >
-                  Modifica
-                </button>
-              ) : (
-                <div className="flex gap-2 h-7 mt-0.5">
-                  <div className="flex-1 min-w-0">
-                    <NumpadInput 
-                      value={newWeightStr}
-                      onChange={(val) => setNewWeightStr(val)}
-                      placeholder="kg"
-                      className="w-full h-7 bg-zinc-900 border border-zinc-700 text-white text-xs px-2 rounded-lg text-center font-semibold"
-                    />
-                  </div>
-                  <button 
-                    onClick={handleSaveWeight} 
-                    disabled={!newWeightStr}
-                    className="w-12 shrink-0 h-7 bg-brand-primary text-black font-bold rounded-lg text-xs active:scale-95 transition-all flex items-center justify-center"
-                  >
-                    OK
-                  </button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
 
         {/* Lista Pasti */}
         <div className="space-y-4">

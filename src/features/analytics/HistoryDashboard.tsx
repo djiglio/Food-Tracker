@@ -1,45 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { Card, CardContent } from '@/components/ui/Card';
-import { NumpadInput } from '@/components/ui/NumpadInput';
-import { Button } from '@/components/ui/Button';
-import { ComposedChart, Area, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
-import { initDB, getWeightLogs, saveWeightLog } from '@/services/db';
+import { initDB } from '@/services/db';
 import { useUserStore } from '@/store/userStore';
 import { getMacroTargetForDate } from '@/core/metabolism';
-import { TrendingDown, TrendingUp, Scale, Activity } from 'lucide-react';
-import { cn } from '@/core/utils';
 import ComplianceCalendar, { ComplianceStatus } from './ComplianceCalendar';
-
-interface UnifiedChartData {
-  dateFull: string; // YYYY-MM-DD
-  dateLabel: string; // DD-MM
-  kcal: number;
-  targetKcal: number;
-  weightKg: number | null;
-}
 
 export const HistoryDashboard: React.FC = () => {
   const getActiveTarget = useUserStore(state => state.getActiveTarget);
 
-  const [weightLogs, setWeightLogs] = useState<{date: string, weightKg: number}[]>([]);
-  const [chartData, setChartData] = useState<UnifiedChartData[]>([]);
-  
   const [complianceMap, setComplianceMap] = useState<Record<string, ComplianceStatus>>({});
   const [currentStreak, setCurrentStreak] = useState(0);
 
-  const [newWeight, setNewWeight] = useState('');
-  const [isLogging, setIsLogging] = useState(false);
-  const [chartDays, setChartDays] = useState(7);
-
-  const loadData = async (daysToLoad: number) => {
+  const loadData = async () => {
     try {
-      const logs = await getWeightLogs();
-      setWeightLogs(logs);
-
       const db = await initDB();
       const allHistory = await db.getAll('history');
       
-      const unifiedData: UnifiedChartData[] = [];
       const now = new Date();
       const todayStr = now.toISOString().split('T')[0];
 
@@ -74,7 +49,7 @@ export const HistoryDashboard: React.FC = () => {
 
       // 2. Calcolo della Streak
       let streak = 0;
-      let d = new Date();
+      const d = new Date();
       let dateCursor = todayStr;
       
       // Se oggi non abbiamo ancora mangiato, iniziamo a contare da ieri
@@ -90,233 +65,25 @@ export const HistoryDashboard: React.FC = () => {
       }
       setCurrentStreak(streak);
 
-      // 3. Carichiamo i dati per il grafico
-      for (let i = daysToLoad - 1; i >= 0; i--) {
-        const dChart = new Date();
-        dChart.setUTCDate(dChart.getUTCDate() - i);
-        const dateStr = dChart.toISOString().split('T')[0];
-        
-        const record = allHistory.find(r => r.date === dateStr);
-        const activeTarget = getActiveTarget(dateStr);
-        const targetKcal = activeTarget ? getMacroTargetForDate(activeTarget, dateStr).kcal : 2000;
-
-        let consumedKcal = 0;
-        if (record && record.meals) {
-          Object.values(record.meals).forEach(meal => {
-            meal.items.forEach(item => {
-              consumedKcal += item.macros.kcal;
-            });
-          });
-        }
-
-        // --- 2. Peso ---
-        const dayWeightLog = logs.find(l => l.date === dateStr);
-        let weightValue = null;
-        if (dayWeightLog) {
-          weightValue = dayWeightLog.weightKg;
-        } else {
-          // Trova il peso più recente precedente a questa data
-          const pastLog = logs.slice().reverse().find(l => l.date <= dateStr);
-          if (pastLog) weightValue = pastLog.weightKg;
-        }
-
-        unifiedData.push({
-          dateFull: dateStr,
-          dateLabel: `${dChart.getUTCDate()}/${dChart.getUTCMonth()+1}`,
-          kcal: Math.round(consumedKcal) || 0,
-          targetKcal,
-          weightKg: weightValue
-        });
-      }
-      setChartData(unifiedData);
-
     } catch (e) {
       console.error(e);
     }
   };
 
   useEffect(() => {
-    loadData(chartDays);
-  }, [chartDays]);
-
-  const handleSaveWeight = async () => {
-    const w = parseFloat(newWeight);
-    if (w > 0) {
-      const today = new Date().toISOString().split('T')[0];
-      await saveWeightLog(today, w);
-      setNewWeight('');
-      setIsLogging(false);
-      loadData(chartDays);
-    }
-  };
-
-  // Calcolo Delta Peso Settimanale (stesso algoritmo di prima)
-  let weightDelta = 0;
-  if (weightLogs.length >= 2) {
-    const latest = weightLogs[weightLogs.length - 1].weightKg;
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-    const pastLog = weightLogs.find(l => new Date(l.date) >= sevenDaysAgo) || weightLogs[0];
-    weightDelta = latest - pastLog.weightKg;
-  }
-
-  // Custom Tooltip per gestire due valori diversi
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-zinc-900 border border-zinc-800 p-3 rounded-xl shadow-xl">
-          <p className="text-zinc-400 text-xs font-bold mb-2">{label}</p>
-          {payload.map((entry: any, index: number) => (
-            <div key={index} className="flex items-center justify-between gap-4 mb-1">
-              <span className="text-xs font-semibold" style={{ color: entry.color }}>{entry.name}:</span>
-              <span className="text-sm font-black text-white">
-                {entry.value} {entry.dataKey === 'weightKg' ? 'kg' : 'kcal'}
-              </span>
-            </div>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
+    loadData();
+  }, []);
 
   return (
     <div className="flex flex-col pb-8">
       <header className="sticky top-0 z-40 glass-header px-4 pb-3 pt-safe mb-4">
-        <h1 className="text-2xl font-bold tracking-tight text-white">Analytics</h1>
-        <p className="text-zinc-400 text-sm">Il quadro completo dei tuoi progressi.</p>
+        <h1 className="text-2xl font-bold tracking-tight text-white">Storico</h1>
+        <p className="text-zinc-400 text-sm">Il calendario dei tuoi progressi giornalieri.</p>
       </header>
 
       <div className="p-4 space-y-6">
-        
         {/* Calendario Compliance & Streak */}
         <ComplianceCalendar complianceMap={complianceMap} currentStreak={currentStreak} />
-
-        {/* Widget Registra Peso */}
-        <Card className="border-brand-primary/30 bg-brand-primary/5">
-          <CardContent className="p-4">
-            {!isLogging ? (
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-brand-primary/20 rounded-full text-brand-primary">
-                    <Scale size={20} />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-white">Peso Odierno</div>
-                    <div className="text-xs text-brand-primary font-medium">
-                      {weightLogs.length > 0 ? `Attuale: ${weightLogs[weightLogs.length - 1].weightKg} kg` : 'Nessun dato'}
-                    </div>
-                  </div>
-                </div>
-                <Button variant="secondary" onClick={() => setIsLogging(true)}>Aggiorna</Button>
-              </div>
-            ) : (
-              <div className="flex gap-2 items-center">
-                <NumpadInput 
-                  label="Inserisci Peso"
-                  placeholder="Es. 70.5" 
-                  value={newWeight} 
-                  onChange={(val) => setNewWeight(val)} 
-                  className="bg-zinc-900 border-zinc-800"
-                />
-                <Button variant="primary" onClick={handleSaveWeight} disabled={!newWeight}>Salva</Button>
-                <Button variant="ghost" onClick={() => setIsLogging(false)}>Annulla</Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Master Chart: Calorie vs Peso */}
-        <Card className="border-zinc-800 bg-zinc-900/50">
-          <CardContent className="p-4">
-            <div className="flex justify-between items-start mb-6">
-              <div className="flex items-center gap-2">
-                <Activity size={18} className="text-zinc-100" />
-                <h3 className="text-sm font-bold tracking-widest uppercase text-zinc-500">Correlazione</h3>
-              </div>
-              
-              <div className="flex items-center gap-2">
-                <select 
-                  value={chartDays} 
-                  onChange={(e) => setChartDays(Number(e.target.value))}
-                  className="bg-zinc-800 border-zinc-700 text-xs text-white rounded-lg px-2 py-1 outline-none appearance-none cursor-pointer"
-                >
-                  <option value={7}>Ultima sett.</option>
-                  <option value={30}>Ultimo mese</option>
-                  <option value={90}>Ultimi 3 mesi</option>
-                  <option value={180}>Ultimi 6 mesi</option>
-                  <option value={365}>Ultimo anno</option>
-                </select>
-
-                {weightLogs.length >= 2 && (
-                  <div className={cn(
-                    "flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold",
-                    weightDelta < 0 ? "bg-brand-primary/20 text-brand-primary" : weightDelta > 0 ? "bg-red-500/20 text-red-500" : "bg-zinc-800 text-zinc-400"
-                  )}>
-                    {weightDelta < 0 ? <TrendingDown size={14} /> : weightDelta > 0 ? <TrendingUp size={14} /> : null}
-                    {weightDelta > 0 ? '+' : ''}{weightDelta.toFixed(1)} kg
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="h-64 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <ComposedChart data={chartData} margin={{ top: 5, right: -10, left: -20, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="colorKcal" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#f97316" stopOpacity={0.2}/>
-                      <stop offset="95%" stopColor="#f97316" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <XAxis dataKey="dateLabel" tick={{fill: '#71717a', fontSize: 10}} tickLine={false} axisLine={false} />
-                  
-                  {/* Asse Y Sinistro per Kcal */}
-                  <YAxis yAxisId="left" hide domain={[0, 'dataMax + 500']} />
-                  
-                  {/* Asse Y Destro per Peso (min-max dinamico per far risaltare le variazioni) */}
-                  <YAxis yAxisId="right" orientation="right" hide domain={['dataMin - 1', 'dataMax + 1']} />
-                  
-                  <Tooltip content={<CustomTooltip />} />
-                  
-                  {/* Linea Kcal Target */}
-                  <ReferenceLine yAxisId="left" y={chartData[0]?.targetKcal || 2000} stroke="#52525b" strokeDasharray="3 3" />
-                  
-                  {/* Area Kcal (Sullo Sfondo) */}
-                  <Area 
-                    yAxisId="left" 
-                    type="monotone" 
-                    dataKey="kcal" 
-                    name="Calorie" 
-                    stroke="#f97316" 
-                    strokeWidth={2} 
-                    fill="url(#colorKcal)" 
-                  />
-
-                  {/* Linea Peso (In Primo Piano, connette i punti anche se ci sono giorni vuoti (connectNulls)) */}
-                  <Line 
-                    yAxisId="right" 
-                    type="monotone" 
-                    dataKey="weightKg" 
-                    name="Peso" 
-                    stroke="#10b981" 
-                    strokeWidth={3} 
-                    dot={{ r: 4, fill: '#10b981', strokeWidth: 2, stroke: '#18181b' }} 
-                    activeDot={{ r: 6 }} 
-                    connectNulls 
-                  />
-                </ComposedChart>
-              </ResponsiveContainer>
-            </div>
-            
-            <div className="mt-6 flex flex-wrap gap-4 items-center justify-center text-xs text-zinc-400 font-semibold">
-              <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-emerald-500"></div> Peso</div>
-              <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-orange-500 opacity-50"></div> Calorie</div>
-              <div className="flex items-center gap-1.5"><div className="w-4 h-0 border-t-2 border-dashed border-zinc-500"></div> Target Kcal</div>
-            </div>
-          </CardContent>
-        </Card>
-
       </div>
     </div>
   );

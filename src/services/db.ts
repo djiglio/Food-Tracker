@@ -22,7 +22,6 @@ export interface MealRecord {
 export interface DiaryDayRecord {
   date: string; // "YYYY-MM-DD"
   targetVersionId: string; // reference to TargetVersion active on this day
-  waterConsumedMl: number;
   meals: Record<string, MealRecord>; // e.g. { 'breakfast': { items: [] } }
 }
 
@@ -134,17 +133,4 @@ export const searchFoods = async (query: string): Promise<FoodEntity[]> => {
   
   const lowerQuery = query.toLowerCase();
   return allFoods.filter(f => f.name.toLowerCase().includes(lowerQuery) || (f.brand && f.brand.toLowerCase().includes(lowerQuery)));
-};
-
-// CRUD for Weight Logs
-export const saveWeightLog = async (date: string, weightKg: number): Promise<void> => {
-  const db = await initDB();
-  await db.put('weightLogs', { date, weightKg });
-  triggerDebouncedSync();
-};
-
-export const getWeightLogs = async (): Promise<{date: string, weightKg: number}[]> => {
-  const db = await initDB();
-  const logs = await db.getAll('weightLogs');
-  return logs.sort((a, b) => a.date.localeCompare(b.date)); // Cronologico
 };
