@@ -1,21 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useUserStore } from '@/store/userStore';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { Target, Beef, Wheat, Droplet, Clock, Database, Share, SlidersHorizontal, ChevronRight, Cloud, LogOut } from 'lucide-react';
+import { Input } from '@/components/ui/Input';
+import { Target, Beef, Wheat, Droplet, Clock, Database, Share, SlidersHorizontal, ChevronRight, Cloud, LogOut, Edit2, ArrowUp, ArrowDown, Trash2, Plus, AlertTriangle, Check, X } from 'lucide-react';
 import { exportAllData } from '@/core/export';
 import { loginWithGoogle, logoutGoogle, auth } from '@/services/firebase';
+import { MealTargetConfig } from '@/core/metabolism';
+import { cn } from '@/core/utils';
 
 export const ProfileDashboard: React.FC = () => {
   const profile = useUserStore((state) => state.profile);
   const getActiveTarget = useUserStore((state) => state.getActiveTarget);
+  const addTargetVersion = useUserStore((state) => state.addTargetVersion);
   const resetProfile = useUserStore((state) => state.resetProfile);
   const navigate = useNavigate();
   const [user, setUser] = React.useState(auth.currentUser);
+  const [isEditingMeals, setIsEditingMeals] = useState(false);
+  const [draftMeals, setDraftMeals] = useState<{ id: string; name: string; percStr: string }[]>([]);
 
   React.useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((u) => setUser(u));
+    const unsubscribe = auth.onAuthStateChanged((u: any) => setUser(u));
     return () => unsubscribe();
   }, []);
 
@@ -36,6 +42,72 @@ export const ProfileDashboard: React.FC = () => {
   };
 
   const { dailyTarget, meals, goal } = activeTarget;
+
+  const startEditingMeals = () => {
+    setDraftMeals(
+      meals.map((m) => ({
+        id: m.id,
+        name: m.name,
+        percStr: Math.round(m.percentage * 100).toString(),
+      }))
+    );
+    setIsEditingMeals(true);
+  };
+
+  const mealsTotalPerc = draftMeals.reduce((acc, m) => acc + (parseInt(m.percStr) || 0), 0);
+
+  const moveMeal = (index: number, direction: 'up' | 'down') => {
+    const newMeals = [...draftMeals];
+    if (direction === 'up' && index > 0) {
+      [newMeals[index - 1], newMeals[index]] = [newMeals[index], newMeals[index - 1]];
+    } else if (direction === 'down' && index < newMeals.length - 1) {
+      [newMeals[index + 1], newMeals[index]] = [newMeals[index], newMeals[index + 1]];
+    }
+    setDraftMeals(newMeals);
+  };
+
+  const updateMeal = (index: number, field: 'name' | 'percStr', value: string) => {
+    const newMeals = [...draftMeals];
+    newMeals[index] = { ...newMeals[index], [field]: value };
+    setDraftMeals(newMeals);
+  };
+
+  const deleteMeal = (index: number) => {
+    if (draftMeals.length <= 1) return;
+    const newMeals = [...draftMeals];
+    newMeals.splice(index, 1);
+    setDraftMeals(newMeals);
+  };
+
+  const addMeal = () => {
+    setDraftMeals([
+      ...draftMeals,
+      {
+        id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
+        name: 'Nuovo Pasto',
+        percStr: '0',
+      },
+    ]);
+  };
+
+  const handleSaveMeals = () => {
+    if (mealsTotalPerc !== 100) return;
+
+    const finalMeals: MealTargetConfig[] = draftMeals.map((m) => ({
+      id: m.id,
+      name: m.name.trim() || 'Pasto',
+      percentage: (parseInt(m.percStr) || 0) / 100,
+    }));
+
+    addTargetVersion({
+      ...activeTarget,
+      id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
+      effectiveFromDate: today,
+      meals: finalMeals,
+    });
+
+    setIsEditingMeals(false);
+  };
 
   return (
     <div className="flex flex-col pb-8">
@@ -118,25 +190,142 @@ export const ProfileDashboard: React.FC = () => {
 
       {/* Ripartizione Pasti */}
       <div>
-        <h3 className="text-sm font-bold tracking-widest uppercase text-zinc-500 mb-3 ml-1">Ripartizione Pasti</h3>
-        <Card className="border-zinc-800">
-          <CardContent className="p-0 divide-y divide-zinc-800/50">
-            {meals.map((meal) => (
-              <div key={meal.id} className="flex justify-between items-center p-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-zinc-900 rounded-full text-zinc-500">
-                    <Clock size={16} />
+        <div className="flex items-center justify-between mb-3 ml-1">
+          <h3 className="text-sm font-bold tracking-widest uppercase text-zinc-500">Ripartizione Pasti</h3>
+          {!isEditingMeals ? (
+            <button
+              onClick={startEditingMeals}
+              className="flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-widest text-brand-primary bg-brand-primary/10 hover:bg-brand-primary/20 px-2.5 py-1 rounded-full transition-colors active:scale-95"
+            >
+              <Edit2 size={12} />
+              Modifica
+            </button>
+          ) : (
+            <span className={cn("text-xs font-bold", mealsTotalPerc === 100 ? "text-brand-primary" : "text-red-500")}>
+              Totale: {mealsTotalPerc}%
+            </span>
+          )}
+        </div>
+
+        {!isEditingMeals ? (
+          <Card className="border-zinc-800">
+            <CardContent className="p-0 divide-y divide-zinc-800/50">
+              {meals.map((meal) => (
+                <div key={meal.id} className="flex justify-between items-center p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-zinc-900 rounded-full text-zinc-500">
+                      <Clock size={16} />
+                    </div>
+                    <span className="font-medium">{meal.name}</span>
                   </div>
-                  <span className="font-medium">{meal.name}</span>
+                  <div className="text-right">
+                    <div className="text-brand-primary font-bold">{Math.round(meal.percentage * 100)}%</div>
+                    <div className="text-[10px] text-zinc-500">{Math.round(dailyTarget.kcal * meal.percentage)} kcal</div>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-brand-primary font-bold">{Math.round(meal.percentage * 100)}%</div>
-                  <div className="text-[10px] text-zinc-500">{Math.round(dailyTarget.kcal * meal.percentage)} kcal</div>
-                </div>
+              ))}
+            </CardContent>
+          </Card>
+        ) : (
+          <Card className="border-brand-primary/30 bg-zinc-900/50">
+            <CardContent className="p-4 space-y-3">
+              <div className="space-y-2.5">
+                {draftMeals.map((meal, index) => {
+                  const mealPerc = parseInt(meal.percStr) || 0;
+                  const mealKcal = Math.round(dailyTarget.kcal * (mealPerc / 100));
+                  return (
+                    <div key={meal.id} className="flex items-center gap-2 p-2.5 bg-zinc-900 border border-zinc-800 rounded-2xl">
+                      <div className="flex flex-col gap-1 shrink-0">
+                        <button
+                          type="button"
+                          disabled={index === 0}
+                          onClick={() => moveMeal(index, 'up')}
+                          className="p-1 text-zinc-500 hover:text-white disabled:opacity-30"
+                        >
+                          <ArrowUp size={15} />
+                        </button>
+                        <button
+                          type="button"
+                          disabled={index === draftMeals.length - 1}
+                          onClick={() => moveMeal(index, 'down')}
+                          className="p-1 text-zinc-500 hover:text-white disabled:opacity-30"
+                        >
+                          <ArrowDown size={15} />
+                        </button>
+                      </div>
+
+                      <div className="flex-1 space-y-1.5">
+                        <Input
+                          value={meal.name}
+                          onChange={(e) => updateMeal(index, 'name', e.target.value)}
+                          className="h-8 text-sm font-semibold bg-transparent border-none px-1"
+                          placeholder="Nome Pasto"
+                        />
+                        <div className="flex items-center gap-2">
+                          <div className="relative flex-1">
+                            <Input
+                              type="number"
+                              value={meal.percStr}
+                              onChange={(e) => updateMeal(index, 'percStr', e.target.value)}
+                              className="h-8 text-sm pr-6 bg-zinc-950 border-zinc-800"
+                            />
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-500">%</span>
+                          </div>
+                          <span className="text-xs text-zinc-500 min-w-[65px] text-right font-medium">
+                            {mealKcal} kcal
+                          </span>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        disabled={draftMeals.length <= 1}
+                        onClick={() => deleteMeal(index)}
+                        className="p-2.5 text-zinc-500 hover:text-red-500 disabled:opacity-30 shrink-0"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
-            ))}
-          </CardContent>
-        </Card>
+
+              <Button
+                variant="secondary"
+                fullWidth
+                onClick={addMeal}
+                className="text-zinc-400 border-dashed border-2 border-zinc-800 hover:bg-zinc-800"
+              >
+                <Plus size={16} className="mr-2" /> Aggiungi Pasto
+              </Button>
+
+              {mealsTotalPerc !== 100 && (
+                <div className="bg-red-950/30 border border-red-900/50 p-3 rounded-xl flex gap-2 items-start text-xs text-red-200">
+                  <AlertTriangle size={16} className="text-red-500 shrink-0 mt-0.5" />
+                  <p>La somma delle percentuali deve essere esattamente 100% (attualmente {mealsTotalPerc}%).</p>
+                </div>
+              )}
+
+              <div className="flex gap-2 pt-2">
+                <Button
+                  variant="ghost"
+                  className="flex-1"
+                  onClick={() => setIsEditingMeals(false)}
+                >
+                  <X size={16} className="mr-1.5" /> Annulla
+                </Button>
+                <Button
+                  variant="primary"
+                  className="flex-1"
+                  disabled={mealsTotalPerc !== 100}
+                  onClick={handleSaveMeals}
+                >
+                  <Check size={16} className="mr-1.5" /> Salva Pasti
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Data & Privacy Section */}
