@@ -16,7 +16,7 @@
 
 @layer utilities {
   .pt-safe {
-    padding-top: calc(max(env(safe-area-inset-top, 0px), 16px) + 12px);
+    padding-top: calc(max(env(safe-area-inset-top, 44px), 44px) + 20px);
   }
   .glass {
     @apply bg-zinc-900/40 backdrop-blur-2xl backdrop-saturate-150 border border-white/5 shadow-2xl;
