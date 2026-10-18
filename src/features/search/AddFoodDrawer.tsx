@@ -72,73 +72,90 @@ export const AddFoodDrawer: React.FC<AddFoodDrawerProps> = ({ food, targetMealId
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[100] flex flex-col justify-end bg-black/60 backdrop-blur-sm">
-      <div className="bg-zinc-950 rounded-t-3xl border-t border-zinc-800 p-6 pb-safe-overlay animate-in slide-in-from-bottom-full duration-300">
+    <div className="fixed inset-0 z-[100] flex flex-col justify-end bg-black/70 backdrop-blur-sm">
+      <div className="bg-[#121215]/95 backdrop-blur-2xl rounded-t-3xl border-t border-white/[0.08] p-6 pb-safe-overlay animate-in slide-in-from-bottom-full duration-300 shadow-[0_-12px_40px_rgba(0,0,0,0.75)] tabular-nums">
         
+        <div className="w-10 h-1 bg-zinc-700/80 rounded-full mx-auto -mt-2 mb-4" />
+
         {/* Header */}
         <div className="flex justify-between items-start mb-4">
-          <div>
-            <h3 className="text-xl font-bold text-white leading-tight pr-4">{food.name}</h3>
-            {food.brand && <p className="text-sm text-brand-primary">{food.brand}</p>}
+          <div className="min-w-0 pr-3">
+            <h3 className="text-lg font-semibold tracking-tight text-zinc-100 leading-snug truncate">{food.name}</h3>
+            {food.brand && <p className="text-xs text-zinc-400 mt-0.5">{food.brand}</p>}
           </div>
-          <button onClick={onClose} className="p-2 bg-zinc-900 rounded-full text-zinc-400 hover:text-white shrink-0">
-            <X size={20} />
+          <button
+            onClick={onClose}
+            className="w-8 h-8 bg-[#18181c] border border-white/[0.06] rounded-xl flex items-center justify-center text-zinc-400 hover:text-zinc-100 shrink-0 transition-colors"
+          >
+            <X size={17} strokeWidth={1.75} />
           </button>
         </div>
 
         {/* Toggle Porzione se disponibile */}
         {hasPortion && (
-          <div className="flex bg-zinc-900 rounded-xl p-1 mb-6 border border-zinc-800">
+          <div className="flex bg-[#09090b] rounded-xl p-1 mb-5 border border-white/[0.06]">
             <button 
-              className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${!isPortionMode ? 'bg-zinc-800 text-white shadow' : 'text-zinc-500 hover:text-zinc-300'}`}
+              className={`flex-1 py-1.5 text-xs font-medium rounded-lg transition-all ${!isPortionMode ? 'bg-zinc-100 text-zinc-950 font-semibold shadow-sm' : 'text-zinc-400 hover:text-zinc-200'}`}
               onClick={() => setIsPortionMode(false)}
             >
               Grammi
             </button>
             <button 
-              className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${isPortionMode ? 'bg-zinc-800 text-white shadow' : 'text-zinc-500 hover:text-zinc-300'}`}
+              className={`flex-1 py-1.5 text-xs font-medium rounded-lg transition-all ${isPortionMode ? 'bg-zinc-100 text-zinc-950 font-semibold shadow-sm' : 'text-zinc-400 hover:text-zinc-200'}`}
               onClick={() => setIsPortionMode(true)}
             >
-              A Pezzi ({food.defaultUnit})
+              Porzione ({food.defaultUnit})
             </button>
           </div>
         )}
 
         {/* Display Live Macros */}
-        <div className="bg-zinc-900/50 rounded-2xl p-4 mb-6 border border-zinc-800">
-          <div className="flex items-end justify-between mb-4 border-b border-zinc-800/50 pb-4">
+        <div className="bg-[#18181c] rounded-2xl p-4 mb-5 border border-white/[0.06]">
+          <div className="flex items-end justify-between mb-3.5 border-b border-white/[0.05] pb-3.5">
             <div>
-              <div className="text-xs text-zinc-500 uppercase tracking-widest font-semibold mb-1">Quantità</div>
-              <div className="text-3xl font-black text-white flex items-baseline gap-1">
-                {amountStr || '0'} <span className="text-lg text-zinc-500 font-medium">{isPortionMode && hasPortion ? food.defaultUnit : 'g'}</span>
+              <div className="text-xs text-zinc-400 font-medium mb-0.5">Quantità</div>
+              <div className="text-3xl font-semibold tracking-tight text-zinc-100 flex items-baseline gap-1">
+                {amountStr || '0'} <span className="text-sm text-zinc-500 font-normal">{isPortionMode && hasPortion ? food.defaultUnit : 'g'}</span>
               </div>
               {isPortionMode && hasPortion && (
-                <div className="text-xs text-zinc-500 mt-1 font-semibold">({Math.round(actualGrams)}g totali)</div>
+                <div className="text-xs text-zinc-500 mt-0.5">({Math.round(actualGrams)}g totali)</div>
               )}
             </div>
             <div className="text-right">
-              <div className="text-2xl font-bold text-brand-primary">{Math.round(currentKcal)} <span className="text-sm">kcal</span></div>
+              <div className="text-xs text-zinc-400 font-medium mb-0.5">Energia</div>
+              <div className="text-2xl font-semibold tracking-tight text-zinc-100">
+                {Math.round(currentKcal)} <span className="text-xs text-zinc-500 font-normal">kcal</span>
+              </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-2 text-center">
-            <div>
-              <div className="text-[10px] text-violet-400 font-bold uppercase tracking-wider mb-1">Proteine</div>
-              <div className="font-semibold text-white">{Math.round(currentPro * 10) / 10}g</div>
+          <div className="grid grid-cols-3 gap-2.5">
+            <div className="bg-[#121215] border border-white/[0.05] rounded-xl p-2.5">
+              <div className="flex items-center gap-1.5 mb-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
+                <span className="text-xs text-zinc-400 font-medium">Proteine</span>
+              </div>
+              <div className="text-sm font-semibold text-zinc-100">{Math.round(currentPro * 10) / 10}g</div>
             </div>
-            <div>
-              <div className="text-[10px] text-amber-400 font-bold uppercase tracking-wider mb-1">Carbo</div>
-              <div className="font-semibold text-white">{Math.round(currentCarbs * 10) / 10}g</div>
+            <div className="bg-[#121215] border border-white/[0.05] rounded-xl p-2.5">
+              <div className="flex items-center gap-1.5 mb-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                <span className="text-xs text-zinc-400 font-medium">Carbo</span>
+              </div>
+              <div className="text-sm font-semibold text-zinc-100">{Math.round(currentCarbs * 10) / 10}g</div>
             </div>
-            <div>
-              <div className="text-[10px] text-rose-400 font-bold uppercase tracking-wider mb-1">Grassi</div>
-              <div className="font-semibold text-white">{Math.round(currentFat * 10) / 10}g</div>
+            <div className="bg-[#121215] border border-white/[0.05] rounded-xl p-2.5">
+              <div className="flex items-center gap-1.5 mb-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
+                <span className="text-xs text-zinc-400 font-medium">Grassi</span>
+              </div>
+              <div className="text-sm font-semibold text-zinc-100">{Math.round(currentFat * 10) / 10}g</div>
             </div>
           </div>
         </div>
 
         {/* Numpad */}
-        <div className="mb-6">
+        <div className="mb-5">
           <CustomNumpad value={amountStr} onChange={setAmountStr} maxLength={5} />
         </div>
 
@@ -150,8 +167,8 @@ export const AddFoodDrawer: React.FC<AddFoodDrawerProps> = ({ food, targetMealId
           onClick={handleAdd}
           disabled={actualGrams <= 0 || !targetMealId}
         >
-          <Check className="mr-2" size={20} />
-          Aggiungi al Diario
+          <Check className="mr-2" size={18} strokeWidth={2} />
+          Aggiungi al diario
         </Button>
       </div>
     </div>,

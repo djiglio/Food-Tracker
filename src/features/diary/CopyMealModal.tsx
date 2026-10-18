@@ -147,72 +147,88 @@ export const CopyMealModal: React.FC<CopyMealModalProps> = ({
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[100] flex flex-col justify-end bg-black/60 backdrop-blur-sm">
-      <div className="bg-zinc-950 rounded-t-3xl border-t border-zinc-800 p-6 pb-safe-overlay animate-in slide-in-from-bottom-full duration-300">
-        <div className="flex justify-between items-center mb-6">
+    <div className="fixed inset-0 z-[100] flex flex-col justify-end bg-black/70 backdrop-blur-sm">
+      <div className="bg-[#121215]/95 backdrop-blur-2xl rounded-t-3xl border-t border-white/[0.08] p-6 pb-safe-overlay animate-in slide-in-from-bottom-full duration-300 shadow-[0_-12px_40px_rgba(0,0,0,0.75)] tabular-nums">
+        <div className="w-10 h-1 bg-zinc-700/80 rounded-full mx-auto -mt-2 mb-4" />
+
+        <div className="flex justify-between items-start mb-5">
           <div>
-            <h3 className="text-xl font-bold">Clona in "{targetMealName}"</h3>
-            <p className="text-sm text-zinc-400">Importa alimenti dallo storico.</p>
+            <h3 className="text-lg font-semibold tracking-tight text-zinc-100">Clona in "{targetMealName}"</h3>
+            <p className="text-xs text-zinc-500 mt-0.5">Importa gli alimenti registrati in un altro pasto</p>
           </div>
-          <button onClick={onClose} className="p-2 bg-zinc-900 rounded-full text-zinc-400 hover:text-white">
-            <X size={20} />
+          <button
+            onClick={onClose}
+            className="w-8 h-8 bg-[#18181c] border border-white/[0.06] rounded-xl flex items-center justify-center text-zinc-400 hover:text-zinc-100 transition-colors"
+          >
+            <X size={17} strokeWidth={1.75} />
           </button>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-5">
           
           {/* Custom Date Picker Orizzontale */}
-          <div className="space-y-3">
-            <label className="text-xs font-semibold text-zinc-400 uppercase flex items-center gap-2">
-              <Calendar size={14} /> Giorno Sorgente
+          <div className="space-y-2.5">
+            <label className="text-xs font-medium text-zinc-400 flex items-center gap-1.5">
+              <Calendar size={13.5} strokeWidth={1.75} className="text-zinc-500" /> Giorno sorgente
             </label>
-            <div className="flex gap-2 overflow-x-auto pb-2 -mx-2 px-2 snap-x scrollbar-hide">
-              {recentDays.map((dayStr) => (
-                <button
-                  key={dayStr}
-                  onClick={() => handleDateChange(dayStr)}
-                  className={`snap-center shrink-0 min-w-[70px] flex flex-col items-center justify-center p-3 rounded-2xl border transition-all active:scale-95 ${
-                    sourceDate === dayStr 
-                      ? 'border-brand-primary bg-brand-primary/10 text-brand-primary' 
-                      : 'border-zinc-800 bg-zinc-900/50 text-zinc-400 hover:bg-zinc-800/80'
-                  }`}
-                >
-                  <span className="text-xs font-semibold uppercase">{getDayLabel(dayStr).split(' ')[0]}</span>
-                  {getDayLabel(dayStr).split(' ')[1] && (
-                    <span className="text-xl font-bold mt-1 text-white">{getDayLabel(dayStr).split(' ')[1]}</span>
-                  )}
-                </button>
-              ))}
+            <div className="flex gap-2 overflow-x-auto pb-1 -mx-2 px-2 snap-x scrollbar-hide">
+              {recentDays.map((dayStr) => {
+                const isSelected = sourceDate === dayStr;
+                const parts = getDayLabel(dayStr).split(' ');
+                return (
+                  <button
+                    key={dayStr}
+                    onClick={() => handleDateChange(dayStr)}
+                    className={`snap-center shrink-0 min-w-[66px] flex flex-col items-center justify-center py-2.5 px-3 rounded-xl border transition-all active:scale-95 ${
+                      isSelected 
+                        ? 'border-zinc-100 bg-zinc-100 text-zinc-950 shadow-sm' 
+                        : 'border-white/[0.06] bg-[#18181c] text-zinc-400 hover:bg-white/[0.06] hover:text-zinc-200'
+                    }`}
+                  >
+                    <span className={`text-[11px] font-medium capitalize ${isSelected ? 'text-zinc-700' : 'text-zinc-400'}`}>
+                      {parts[0]}
+                    </span>
+                    {parts[1] && (
+                      <span className={`text-base font-semibold mt-0.5 ${isSelected ? 'text-zinc-950' : 'text-zinc-100'}`}>
+                        {parts[1]}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
           {/* Selettore Pasto */}
-          <div className="space-y-3">
-            <label className="text-xs font-semibold text-zinc-400 uppercase">
-              Seleziona Pasto
+          <div className="space-y-2.5">
+            <label className="text-xs font-medium text-zinc-400 block">
+              Seleziona pasto da copiare
             </label>
             {isLoading ? (
-              <div className="text-sm text-zinc-500 py-4 text-center">Ricerca nello storico...</div>
+              <div className="text-xs text-zinc-500 py-5 text-center">Ricerca nello storico...</div>
             ) : availableMeals.length === 0 ? (
-              <div className="text-sm text-amber-500 bg-amber-950/30 border border-amber-900/50 p-4 rounded-xl text-center">
+              <div className="text-xs text-zinc-400 bg-[#18181c] border border-white/[0.06] p-4 rounded-xl text-center">
                 Nessun alimento registrato in questa data.
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-2">
-                {availableMeals.map((meal) => (
-                  <button
-                    key={meal.id}
-                    onClick={() => setSelectedMealId(meal.id)}
-                    className={`p-3 rounded-2xl border text-left flex flex-col transition-all active:scale-95 ${
-                      selectedMealId === meal.id 
-                        ? 'border-brand-primary bg-brand-primary/10' 
-                        : 'border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800'
-                    }`}
-                  >
-                    <span className="font-bold text-sm capitalize mb-1 text-zinc-100">{meal.name}</span>
-                    <span className="text-[11px] text-brand-primary/80 font-medium">{meal.itemCount} alimenti</span>
-                  </button>
-                ))}
+                {availableMeals.map((meal) => {
+                  const isSelected = selectedMealId === meal.id;
+                  return (
+                    <button
+                      key={meal.id}
+                      onClick={() => setSelectedMealId(meal.id)}
+                      className={`p-3 rounded-xl border text-left flex flex-col transition-all active:scale-95 ${
+                        isSelected 
+                          ? 'border-white/[0.25] bg-white/[0.08]' 
+                          : 'border-white/[0.06] bg-[#18181c] hover:bg-white/[0.04]'
+                      }`}
+                    >
+                      <span className="font-medium text-sm text-zinc-100 mb-0.5 truncate">{meal.name}</span>
+                      <span className="text-xs text-zinc-400">{meal.itemCount} {meal.itemCount === 1 ? 'alimento' : 'alimenti'}</span>
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -220,11 +236,11 @@ export const CopyMealModal: React.FC<CopyMealModalProps> = ({
           <Button 
             fullWidth 
             variant="primary" 
+            size="lg"
             disabled={!selectedMealId || availableMeals.length === 0}
             onClick={handleCopy}
-            className="mt-4"
           >
-            <Copy className="mr-2" size={18} /> Importa Alimenti
+            <Copy className="mr-2" size={16} strokeWidth={2} /> Importa alimenti
           </Button>
         </div>
       </div>

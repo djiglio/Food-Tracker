@@ -40,7 +40,7 @@ export const CustomNumpad: React.FC<CustomNumpadProps> = ({ value, onChange, max
   ];
 
   return (
-    <div className="grid grid-cols-3 gap-3 w-full max-w-xs mx-auto">
+    <div className="grid grid-cols-3 gap-2.5 w-full max-w-xs mx-auto tabular-nums">
       {keys.map((k, i) => (
         <button
           key={i}
@@ -49,13 +49,13 @@ export const CustomNumpad: React.FC<CustomNumpadProps> = ({ value, onChange, max
             handlePress(k);
           }}
           className={cn(
-            "h-14 rounded-2xl flex items-center justify-center text-2xl font-semibold transition-all active:scale-90",
+            "h-13 py-3 rounded-2xl flex items-center justify-center text-xl font-medium transition-all active:scale-95 border",
             k === 'del' 
-              ? "bg-zinc-800/50 text-red-400 hover:bg-zinc-800" 
-              : "bg-zinc-900 border border-zinc-800 text-zinc-100 hover:bg-zinc-800"
+              ? "bg-rose-500/10 border-rose-500/20 text-rose-400 hover:bg-rose-500/15" 
+              : "bg-[#18181c] border-white/[0.06] text-zinc-100 hover:bg-zinc-800/80 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)]"
           )}
         >
-          {k === 'del' ? <Delete size={24} /> : k}
+          {k === 'del' ? <Delete size={20} strokeWidth={1.75} /> : k}
         </button>
       ))}
     </div>

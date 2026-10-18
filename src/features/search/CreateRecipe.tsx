@@ -114,139 +114,153 @@ export const CreateRecipe: React.FC<CreateRecipeProps> = ({ onBack, onRecipeCrea
   };
 
   return (
-    <div className="flex flex-col h-full bg-zinc-950 overflow-y-auto">
+    <div className="flex flex-col h-full bg-[#09090b] overflow-y-auto tabular-nums">
       {/* Header Fissato */}
-      <div className="sticky top-0 z-40 glass-header px-4 pb-3 flex items-center justify-between pt-safe">
-        <button onClick={onBack} className="p-2 text-zinc-400 hover:text-white active:scale-95 bg-zinc-900 rounded-full">
-          <ArrowLeft size={20} />
+      <div className="sticky top-0 z-40 glass-header px-4 pb-3 flex items-center gap-3 pt-safe">
+        <button
+          onClick={onBack}
+          className="w-9 h-9 text-zinc-400 hover:text-zinc-100 active:scale-95 bg-[#121215] border border-white/[0.06] rounded-xl flex items-center justify-center transition-colors"
+        >
+          <ArrowLeft size={18} strokeWidth={1.75} />
         </button>
-        <h1 className="font-bold text-lg text-white">Nuova Ricetta</h1>
-        <div className="w-9" /> {/* Spacer */}
+        <h1 className="font-semibold tracking-tight text-lg text-zinc-100">Nuova ricetta</h1>
       </div>
 
-      <div className="p-4 space-y-6 pb-24">
+      <div className="p-4 space-y-5 pb-28">
         {/* Info di Base */}
-        <div className="space-y-4">
-          <div>
-            <label className="text-xs font-bold tracking-widest uppercase text-zinc-500 mb-2 block">Nome Ricetta</label>
-            <Input 
-              value={name} 
-              onChange={e => setName(e.target.value)} 
-              placeholder="Es. Porridge Proteico"
-              className="bg-zinc-900/50 border-zinc-800 text-lg py-6"
-            />
-          </div>
-          <div>
-            <label className="text-xs font-bold tracking-widest uppercase text-zinc-500 mb-2 block">Note e Preparazione (Opzionale)</label>
-            <textarea
-              value={notes}
-              onChange={e => setNotes(e.target.value)}
-              placeholder="Appunti, tempi di cottura, ecc..."
-              className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-brand-primary min-h-[80px]"
-            />
-          </div>
-        </div>
+        <Card>
+          <CardContent className="p-4 space-y-4">
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-zinc-400 block">Nome ricetta</label>
+              <Input 
+                value={name} 
+                onChange={e => setName(e.target.value)} 
+                placeholder="Es. Porridge proteico"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-zinc-400 block">Note e preparazione (opzionale)</label>
+              <textarea
+                value={notes}
+                onChange={e => setNotes(e.target.value)}
+                placeholder="Appunti, tempi di cottura, ecc..."
+                className="w-full bg-[#18181c] border border-white/[0.06] rounded-xl p-3 text-sm text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-white/25 min-h-[76px]"
+              />
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Ingredienti */}
         <div>
-          <div className="flex justify-between items-center mb-3">
-            <h3 className="text-xs font-bold tracking-widest uppercase text-zinc-500">Ingredienti</h3>
-            <span className="text-xs font-semibold text-zinc-400">Totale Crudo: {rawWeight}g</span>
+          <div className="flex justify-between items-center mb-2.5 px-1">
+            <h3 className="text-xs font-medium text-zinc-500">Ingredienti</h3>
+            <span className="text-xs font-medium text-zinc-400">Peso crudo: {rawWeight}g</span>
           </div>
 
-          <div className="space-y-3 mb-3">
-            {ingredients.map((ing, i) => (
-              <Card key={i} className="border-zinc-800 bg-zinc-900/40">
-                <CardContent className="p-3 flex items-center gap-3">
-                  <div className="flex-1">
-                    <div className="font-semibold text-sm text-white mb-1">{ing.food.name}</div>
-                    <div className="text-[10px] text-zinc-500">
-                      {Math.round(ing.food.kcalPer100 * (ing.amountGrams/100))} kcal
+          {ingredients.length > 0 && (
+            <Card className="mb-3 overflow-hidden">
+              <CardContent className="p-0 divide-y divide-white/[0.04]">
+                {ingredients.map((ing, i) => (
+                  <div key={i} className="p-3.5 flex items-center justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <div className="font-medium text-sm text-zinc-100 truncate">{ing.food.name}</div>
+                      <div className="text-xs text-zinc-500 mt-0.5">
+                        {Math.round(ing.food.kcalPer100 * (ing.amountGrams / 100))} kcal
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <div className="relative w-20">
+                        <Input
+                          type="number"
+                          label={`Grammi ${ing.food.name}`}
+                          value={ing.amountGrams || ''}
+                          onChange={e => updateAmount(i, e.target.value)}
+                          className="h-8 bg-[#09090b] border-white/[0.06] text-zinc-100 text-sm pr-6 rounded-lg text-center font-semibold"
+                          placeholder="0"
+                        />
+                        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-zinc-500">g</span>
+                      </div>
+                      <button
+                        onClick={() => removeIngredient(i)}
+                        className="p-1.5 text-zinc-500 hover:text-rose-400 transition-colors"
+                      >
+                        <Trash2 size={16} strokeWidth={1.75} />
+                      </button>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="number"
-                      value={ing.amountGrams || ''}
-                      onChange={e => updateAmount(i, e.target.value)}
-                      className="w-16 bg-zinc-950 border border-zinc-800 text-white text-sm px-2 py-1.5 rounded-lg text-center"
-                      placeholder="0"
-                    />
-                    <span className="text-xs text-zinc-500">g</span>
-                    <button onClick={() => removeIngredient(i)} className="p-2 text-zinc-600 hover:text-red-500 transition-colors">
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                ))}
+              </CardContent>
+            </Card>
+          )}
 
           {!isSearching ? (
             <Button 
               variant="secondary" 
               fullWidth 
-              className="border-dashed border-2 border-zinc-800 bg-transparent hover:bg-zinc-900 text-zinc-400"
+              className="border-dashed border border-white/[0.1] text-zinc-300"
               onClick={() => setIsSearching(true)}
             >
-              <Plus size={18} className="mr-2" /> Aggiungi Ingrediente
+              <Plus size={16} strokeWidth={2} className="mr-1.5" /> Aggiungi ingrediente
             </Button>
           ) : (
-            <div className="bg-zinc-900 border border-brand-primary/50 rounded-xl p-3 space-y-3">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={16} />
-                <Input 
-                  ref={searchInputRef}
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  placeholder="Cerca ingrediente..."
-                  className="pl-9 bg-zinc-950 border-zinc-800 text-sm"
-                />
-              </div>
-              <div className="max-h-48 overflow-y-auto space-y-1 pr-1">
-                {searchResults.length === 0 && searchQuery && (
-                  <div className="text-center text-xs text-zinc-500 py-4">Nessun risultato</div>
-                )}
-                {searchResults.map(res => (
-                  <button 
-                    key={res.id} 
-                    onClick={() => handleAddIngredient(res)}
-                    className="w-full text-left p-2 rounded-lg hover:bg-zinc-800 flex justify-between items-center transition-colors"
-                  >
-                    <span className="text-sm font-medium text-white">{res.name}</span>
-                    <span className="text-xs text-brand-primary"><Plus size={14}/></span>
-                  </button>
-                ))}
-              </div>
-              <Button variant="ghost" fullWidth size="sm" onClick={() => setIsSearching(false)}>
-                Annulla
-              </Button>
-            </div>
+            <Card>
+              <CardContent className="p-3.5 space-y-3">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={15} strokeWidth={1.75} />
+                  <Input 
+                    ref={searchInputRef}
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    placeholder="Cerca ingrediente..."
+                    className="pl-9 h-9 bg-[#09090b] border-white/[0.06] text-sm"
+                  />
+                </div>
+                <div className="max-h-48 overflow-y-auto divide-y divide-white/[0.04]">
+                  {searchResults.length === 0 && searchQuery && (
+                    <div className="text-center text-xs text-zinc-500 py-4">Nessun risultato</div>
+                  )}
+                  {searchResults.map(res => (
+                    <button 
+                      key={res.id} 
+                      onClick={() => handleAddIngredient(res)}
+                      className="w-full text-left py-2.5 px-2 hover:bg-white/[0.03] flex justify-between items-center transition-colors"
+                    >
+                      <span className="text-sm font-medium text-zinc-100 truncate pr-2">{res.name}</span>
+                      <Plus size={15} strokeWidth={2} className="text-zinc-400 shrink-0" />
+                    </button>
+                  ))}
+                </div>
+                <Button variant="secondary" fullWidth size="sm" onClick={() => setIsSearching(false)}>
+                  Annulla
+                </Button>
+              </CardContent>
+            </Card>
           )}
         </div>
 
         {/* Resa (Cottura) */}
         <div>
-          <h3 className="text-xs font-bold tracking-widest uppercase text-zinc-500 mb-3">Resa (Peso Cotto)</h3>
-          <Card className="border-orange-900/30 bg-orange-950/10">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="bg-orange-500/20 p-2 rounded-full text-orange-500">
-                  <ChefHat size={20} />
+          <h3 className="text-xs font-medium text-zinc-500 mb-2.5 px-1">Resa dopo cottura</h3>
+          <Card>
+            <CardContent className="p-4 space-y-3">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-xl bg-[#18181c] border border-white/[0.06] flex items-center justify-center text-zinc-300 shrink-0">
+                  <ChefHat size={16} strokeWidth={1.75} />
                 </div>
-                <div>
-                  <p className="text-xs text-zinc-400">Il peso cambia dopo la cottura (evaporazione acqua). Inserisci il peso finale per calibrare i macro.</p>
-                </div>
+                <p className="text-xs text-zinc-500 leading-relaxed">
+                  Inserisci il peso totale a fine cottura per ricalibrare automaticamente calorie e macronutrienti su 100g.
+                </p>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="relative">
                 <Input 
                   type="number"
+                  label="Peso cotto totale (g)"
                   value={cookedWeightStr}
                   onChange={e => setCookedWeightStr(e.target.value)}
                   placeholder={rawWeight.toString()}
-                  className="bg-zinc-900/80 border-orange-900/50 text-xl font-bold text-center"
+                  className="bg-[#18181c] border-white/[0.06] text-base font-semibold pr-16"
                 />
-                <span className="font-semibold text-zinc-500">grammi</span>
+                <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-zinc-500 font-medium">grammi</span>
               </div>
             </CardContent>
           </Card>
@@ -254,23 +268,32 @@ export const CreateRecipe: React.FC<CreateRecipeProps> = ({ onBack, onRecipeCrea
 
         {/* Live Macros (per 100g) */}
         <div>
-          <h3 className="text-xs font-bold tracking-widest uppercase text-zinc-500 mb-3">Valori Finali (per 100g)</h3>
-          <div className="grid grid-cols-4 gap-2 text-center bg-zinc-900/40 rounded-xl p-3 border border-zinc-800">
+          <h3 className="text-xs font-medium text-zinc-500 mb-2.5 px-1">Valori finali (per 100g)</h3>
+          <div className="grid grid-cols-4 gap-2 bg-[#121215] rounded-2xl p-3.5 border border-white/[0.06]">
             <div>
-              <div className="text-[10px] text-zinc-500 uppercase font-bold mb-1">Kcal</div>
-              <div className="font-black text-brand-primary">{Math.round(kcalPer100) || 0}</div>
+              <div className="text-xs text-zinc-400 font-medium mb-1">Energia</div>
+              <div className="text-sm font-semibold text-zinc-100">{Math.round(kcalPer100) || 0} <span className="text-[11px] text-zinc-500 font-normal">kcal</span></div>
             </div>
             <div>
-              <div className="text-[10px] text-violet-400 uppercase font-bold mb-1">Pro</div>
-              <div className="font-semibold text-white">{Math.round(proPer100 * 10) / 10 || 0}g</div>
+              <div className="flex items-center gap-1 mb-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
+                <span className="text-xs text-zinc-400 font-medium">Proteine</span>
+              </div>
+              <div className="text-sm font-semibold text-zinc-100">{Math.round(proPer100 * 10) / 10 || 0}g</div>
             </div>
             <div>
-              <div className="text-[10px] text-amber-400 uppercase font-bold mb-1">Carbo</div>
-              <div className="font-semibold text-white">{Math.round(carbsPer100 * 10) / 10 || 0}g</div>
+              <div className="flex items-center gap-1 mb-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                <span className="text-xs text-zinc-400 font-medium">Carbo</span>
+              </div>
+              <div className="text-sm font-semibold text-zinc-100">{Math.round(carbsPer100 * 10) / 10 || 0}g</div>
             </div>
             <div>
-              <div className="text-[10px] text-rose-400 uppercase font-bold mb-1">Fat</div>
-              <div className="font-semibold text-white">{Math.round(fatPer100 * 10) / 10 || 0}g</div>
+              <div className="flex items-center gap-1 mb-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
+                <span className="text-xs text-zinc-400 font-medium">Grassi</span>
+              </div>
+              <div className="text-sm font-semibold text-zinc-100">{Math.round(fatPer100 * 10) / 10 || 0}g</div>
             </div>
           </div>
         </div>
@@ -278,17 +301,16 @@ export const CreateRecipe: React.FC<CreateRecipeProps> = ({ onBack, onRecipeCrea
       </div>
 
       {/* Footer Fissato */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-zinc-950 via-zinc-950 to-transparent">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#09090b] via-[#09090b]/95 to-transparent">
         <Button 
           variant="primary" 
           fullWidth 
           size="lg"
           onClick={handleSave}
           disabled={!name.trim() || ingredients.length === 0 || cookedWeight <= 0}
-          className="shadow-xl shadow-brand-primary/20"
         >
-          <Save size={20} className="mr-2" />
-          Salva Ricetta
+          <Save size={18} strokeWidth={2} className="mr-2" />
+          Salva ricetta
         </Button>
       </div>
     </div>

@@ -67,26 +67,28 @@ export const NumpadInput: React.FC<NumpadInputProps> = ({
       </div>
 
       {isOpen && createPortal(
-        <div className="fixed inset-0 z-[120] flex flex-col justify-end bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-zinc-950 rounded-t-3xl border-t border-zinc-800 p-6 pb-safe-overlay animate-in slide-in-from-bottom-full duration-300">
+        <div className="fixed inset-0 z-[120] flex flex-col justify-end bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-[#121215]/95 backdrop-blur-2xl rounded-t-3xl border-t border-white/[0.08] p-6 pb-safe-overlay animate-in slide-in-from-bottom-full duration-300 shadow-[0_-12px_40px_rgba(0,0,0,0.75)]">
             
-            <div className="flex justify-between items-start mb-6">
-              <h3 className="text-xl font-bold text-white">{label || 'Inserisci valore'}</h3>
+            <div className="w-10 h-1 bg-zinc-700/80 rounded-full mx-auto -mt-2 mb-4" />
+
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-base font-semibold tracking-tight text-zinc-100">{label || 'Inserisci valore'}</h3>
               <button 
                 onClick={() => setIsOpen(false)} 
-                className="p-2 bg-zinc-900 rounded-full text-zinc-400 hover:text-white transition-colors"
+                className="w-8 h-8 rounded-xl bg-[#18181c] border border-white/[0.06] flex items-center justify-center text-zinc-400 hover:text-zinc-100 transition-colors"
               >
-                <X size={20} />
+                <X size={17} strokeWidth={1.75} />
               </button>
             </div>
 
-            <div className="bg-zinc-900/50 rounded-2xl p-4 mb-6 border border-zinc-800 flex items-center justify-center min-h-[100px]">
-              <div className="text-5xl font-black text-brand-primary tracking-tight">
+            <div className="bg-[#09090b] rounded-2xl p-4 mb-5 border border-white/[0.06] flex items-center justify-center min-h-[84px]">
+              <div className="text-4xl font-semibold text-zinc-100 tracking-tight tabular-nums">
                 {tempValue || '0'}
               </div>
             </div>
 
-            <div className="mb-6">
+            <div className="mb-5">
               <CustomNumpad 
                 value={tempValue} 
                 onChange={handleChange} 
@@ -100,7 +102,7 @@ export const NumpadInput: React.FC<NumpadInputProps> = ({
               size="lg" 
               onClick={handleConfirm}
             >
-              <Check className="mr-2" size={20} />
+              <Check className="mr-2" size={18} strokeWidth={2} />
               Conferma
             </Button>
           </div>
