@@ -1,15 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Search, ArrowLeft, Plus, ChevronRight, ScanLine, ChefHat, Star, Trash2, Edit2 } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
-import { searchFoods, FoodEntity, getFoodByBarcode, saveFood, deleteFood } from '@/services/db';
+import { initDB, searchFoods, FoodEntity, getFoodByBarcode, saveFood, deleteFood } from '@/services/db';
 import { fetchOpenFoodFacts } from '@/services/openfoodfacts';
 import { SwipeableItem } from '@/components/ui/SwipeableItem';
+import { cn } from '@/core/utils';
 import AddFoodDrawer from './AddFoodDrawer';
 import CreateFood from './CreateFood';
 import CreateRecipe from './CreateRecipe';
 import BarcodeScanner from './BarcodeScanner';
+
+type QuickFilter = 'favorites' | 'recipes' | 'recent' | null;
 
 export const SearchDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -18,6 +21,8 @@ export const SearchDashboard: React.FC = () => {
 
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<FoodEntity[]>([]);
+  const [activeFilter, setActiveFilter] = useState<QuickFilter>(null);
+  const [recentFoodIds, setRecentFoodIds] = useState<string[]>([]);
   const [isCreating, setIsCreating] = useState(false);
   const [isCreatingRecipe, setIsCreatingRecipe] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
@@ -25,6 +30,41 @@ export const SearchDashboard: React.FC = () => {
   const [selectedFood, setSelectedFood] = useState<FoodEntity | null>(null);
   const [itemToDelete, setItemToDelete] = useState<FoodEntity | null>(null);
   const [foodToEdit, setFoodToEdit] = useState<FoodEntity | undefined>(undefined);
+
+  const triggerHaptic = (ms = 12) => {
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate(ms);
+    }
+  };
+
+  // Carica gli ID degli alimenti usati di recente dallo storico
+  useEffect(() => {
+    const loadRecentFoodIds = async () => {
+      try {
+        const db = await initDB();
+        const allHistory = await db.getAll('history');
+        const sortedDays = allHistory.sort((a, b) => b.date.localeCompare(a.date));
+        const seen = new Set<string>();
+        const recent: string[] = [];
+
+        for (const day of sortedDays) {
+          if (!day.meals) continue;
+          for (const meal of Object.values(day.meals)) {
+            for (const item of meal.items) {
+              if (item.foodId && !seen.has(item.foodId)) {
+                seen.add(item.foodId);
+                recent.push(item.foodId);
+              }
+            }
+          }
+        }
+        setRecentFoodIds(recent);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    loadRecentFoodIds();
+  }, []);
 
   const handleDeleteConfirm = async () => {
     if (itemToDelete) {
@@ -53,6 +93,28 @@ export const SearchDashboard: React.FC = () => {
     }, 300); // 300ms debounce
     return () => clearTimeout(timer);
   }, [query]);
+
+  const filteredResults = useMemo(() => {
+    if (!activeFilter) return results;
+    if (activeFilter === 'favorites') {
+      return results.filter(f => !!f.isFavorite);
+    }
+    if (activeFilter === 'recipes') {
+      return results.filter(f => !!f.isRecipe);
+    }
+    if (activeFilter === 'recent') {
+      const orderMap = new Map(recentFoodIds.map((id, idx) => [id, idx]));
+      return results
+        .filter(f => orderMap.has(f.id))
+        .sort((a, b) => (orderMap.get(a.id) ?? 999) - (orderMap.get(b.id) ?? 999));
+    }
+    return results;
+  }, [results, activeFilter, recentFoodIds]);
+
+  const toggleQuickFilter = (filter: Exclude<QuickFilter, null>) => {
+    triggerHaptic(12);
+    setActiveFilter(prev => (prev === filter ? null : filter));
+  };
 
   // Gestione Scansione Barcode
   const handleBarcodeScan = async (barcode: string) => {
@@ -84,6 +146,7 @@ export const SearchDashboard: React.FC = () => {
 
   const toggleFavorite = async (e: React.MouseEvent, food: FoodEntity) => {
     e.stopPropagation(); // Previene l'apertura del drawer
+    triggerHaptic(15);
     const updatedFood = { ...food, isFavorite: !food.isFavorite };
     await saveFood(updatedFood);
     
@@ -137,11 +200,17 @@ export const SearchDashboard: React.FC = () => {
     return <BarcodeScanner onScan={handleBarcodeScan} onClose={() => setIsScanning(false)} />;
   }
 
+  const filterChips: { id: Exclude<QuickFilter, null>; label: string; emoji: string }[] = [
+    { id: 'favorites', label: 'Preferiti', emoji: '⭐' },
+    { id: 'recipes', label: 'Ricette', emoji: '🍳' },
+    { id: 'recent', label: 'Recenti', emoji: '🕒' },
+  ];
+
   return (
     <div className="flex flex-col min-h-full bg-zinc-950">
       
       {/* Header Ricerca Fissato */}
-      <div className="sticky top-0 z-40 glass-header px-4 pb-3 space-y-4 pt-safe">
+      <div className="sticky top-0 z-40 glass-header px-4 pb-3 space-y-3 pt-safe">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate(-1)} className="p-2 text-zinc-400 hover:text-white active:scale-95 bg-zinc-900 rounded-full shrink-0">
             <ArrowLeft size={20} />
@@ -163,17 +232,42 @@ export const SearchDashboard: React.FC = () => {
             </button>
           </div>
         </div>
+
+        {/* Filtro rapido a chips orizzontali */}
+        <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-0.5 -mx-1 px-1">
+          {filterChips.map((chip) => {
+            const isSelected = activeFilter === chip.id;
+            return (
+              <button
+                key={chip.id}
+                type="button"
+                onClick={() => toggleQuickFilter(chip.id)}
+                className={cn(
+                  "shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 active:scale-95 border",
+                  isSelected
+                    ? "bg-brand-primary/20 text-brand-primary border-brand-primary/50 shadow-[0_0_12px_rgba(16,185,129,0.25)]"
+                    : "bg-zinc-900/60 text-zinc-400 border-white/10 hover:text-zinc-200 hover:bg-zinc-800/70"
+                )}
+              >
+                <span>{chip.emoji}</span>
+                <span>{chip.label}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Lista Risultati Scorrevole */}
       <div className="flex-1 p-4 space-y-2">
-        {results.length === 0 ? (
+        {filteredResults.length === 0 ? (
           <div className="text-center py-10 space-y-4">
             <div className="mx-auto w-16 h-16 bg-zinc-900 rounded-full flex items-center justify-center text-zinc-700 mb-4">
               <Search size={32} />
             </div>
             <p className="text-zinc-500 text-sm">
-              {query ? 'Nessun alimento trovato nel tuo database.' : 'Digita per cercare tra i tuoi alimenti salvati.'}
+              {query || activeFilter
+                ? 'Nessun alimento trovato con i filtri selezionati.'
+                : 'Digita per cercare tra i tuoi alimenti salvati.'}
             </p>
             <div className="mt-4 flex flex-col gap-2 w-full max-w-xs mx-auto">
               <Button variant="secondary" onClick={() => setIsCreatingRecipe(true)} className="w-full">
@@ -198,7 +292,7 @@ export const SearchDashboard: React.FC = () => {
               </div>
             </div>
             
-            {results.map((food) => (
+            {filteredResults.map((food) => (
               <SwipeableItem
                 key={food.id}
                 onSwipeLeft={() => setItemToDelete(food)}

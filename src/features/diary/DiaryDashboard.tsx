@@ -7,9 +7,16 @@ import { useUserStore } from '@/store/userStore';
 import { useDiaryStore } from '@/store/diaryStore';
 import { getMacroTargetForDate } from '@/core/metabolism';
 import { ChevronLeft, ChevronRight, Plus, Copy, Trash2, Calendar, X, Check } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import CustomNumpad from '@/components/ui/CustomNumpad';
 import { CopyMealModal } from './CopyMealModal';
 import { FoodLogItem } from '@/services/db';
+
+const triggerHaptic = (ms = 15) => {
+  if (typeof navigator !== 'undefined' && navigator.vibrate) {
+    navigator.vibrate(ms);
+  }
+};
 
 export const DiaryDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -32,7 +39,7 @@ export const DiaryDashboard: React.FC = () => {
 
   const handlePressStart = (mealId: string, item: FoodLogItem) => {
     pressTimer.current = setTimeout(() => {
-      if (navigator.vibrate) navigator.vibrate(50);
+      triggerHaptic(50);
       setEditingItem({ mealId, item });
       setEditingAmountStr(item.amount.toString());
     }, 400); // 400ms hold
@@ -67,6 +74,7 @@ export const DiaryDashboard: React.FC = () => {
       }
     };
 
+    triggerHaptic(20);
     updateFoodInMeal(editingItem.mealId, updatedItem);
     setEditingItem(null);
   };
@@ -94,12 +102,14 @@ export const DiaryDashboard: React.FC = () => {
 
   // --- Date Navigation ---
   const handlePrevDay = () => {
+    triggerHaptic(10);
     const d = new Date(currentDate);
     d.setDate(d.getDate() - 1);
     setCurrentDate(d.toISOString().split('T')[0]);
   };
 
   const handleNextDay = () => {
+    triggerHaptic(10);
     const d = new Date(currentDate);
     d.setDate(d.getDate() + 1);
     setCurrentDate(d.toISOString().split('T')[0]);
@@ -139,7 +149,10 @@ export const DiaryDashboard: React.FC = () => {
             {new Date(currentDate).toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' })}
           </div>
           <button 
-            onClick={() => setCurrentDate(new Date().toISOString().split('T')[0])}
+            onClick={() => {
+              triggerHaptic(10);
+              setCurrentDate(new Date().toISOString().split('T')[0]);
+            }}
             className={`p-1.5 rounded-full transition-all active:scale-95 ${
               currentDate === new Date().toISOString().split('T')[0]
                 ? 'bg-brand-primary/20 text-brand-primary ring-1 ring-brand-primary/30 shadow-[0_0_10px_rgba(16,185,129,0.2)]'
@@ -198,56 +211,93 @@ export const DiaryDashboard: React.FC = () => {
             const mealData = dayRecord?.meals[mealConfig.id];
             const items = mealData?.items || [];
             const mealKcal = items.reduce((acc, item) => acc + item.macros.kcal, 0);
+            const mealPro = items.reduce((acc, item) => acc + item.macros.proteinG, 0);
+            const mealCarb = items.reduce((acc, item) => acc + item.macros.carbsG, 0);
+            const mealFat = items.reduce((acc, item) => acc + item.macros.fatG, 0);
 
             return (
-              <Card key={mealConfig.id} className="border-zinc-800/80 bg-zinc-900/40">
+              <Card key={mealConfig.id} className="border-white/10 bg-zinc-900/45">
                 <CardContent className="p-0">
-                  {/* Header Pasto */}
-                  <div className="p-4 flex justify-between items-center border-b border-zinc-800/50 bg-zinc-800/30">
-                    <div>
-                      <h3 className="font-bold text-lg">{mealConfig.name}</h3>
-                      <div className="text-xs text-zinc-500 font-medium">Target: {mealTargetKcal} kcal</div>
+                  {/* Header Pasto con Macro Pills */}
+                  <div className="p-4 flex justify-between items-start border-b border-white/5 bg-zinc-800/30">
+                    <div className="space-y-2">
+                      <div>
+                        <h3 className="font-bold text-lg leading-tight">{mealConfig.name}</h3>
+                        <div className="text-xs text-zinc-500 font-medium mt-0.5">Target: {mealTargetKcal} kcal</div>
+                      </div>
+                      {/* Macro Pills del singolo pasto */}
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-violet-500/15 text-violet-300 border border-violet-500/25">
+                          P: {Math.round(mealPro)}g
+                        </span>
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/25">
+                          C: {Math.round(mealCarb)}g
+                        </span>
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/15 text-rose-300 border border-rose-500/25">
+                          F: {Math.round(mealFat)}g
+                        </span>
+                      </div>
                     </div>
                     <div className="text-right">
-                      <div className="font-bold text-white">{Math.round(mealKcal)} kcal</div>
+                      <div className="font-black text-lg text-white">{Math.round(mealKcal)} <span className="text-xs font-medium text-zinc-400">kcal</span></div>
                     </div>
                   </div>
 
-                  {/* Lista Alimenti */}
-                  <div className="p-2 space-y-1">
-                    {items.length === 0 ? (
-                      <div className="p-4 text-center text-sm text-zinc-600 italic">Nessun alimento.</div>
-                    ) : (
-                      items.map(item => (
-                        <div 
-                          key={item.id} 
-                          className="flex justify-between items-center p-3 hover:bg-zinc-800/30 rounded-xl transition-colors group select-none touch-pan-y"
-                          onPointerDown={() => handlePressStart(mealConfig.id, item)}
-                          onPointerUp={handlePressEnd}
-                          onPointerLeave={handlePressEnd}
-                          onPointerCancel={handlePressEnd}
-                          onContextMenu={(e) => {
-                            if (('ontouchstart' in window) || navigator.maxTouchPoints > 0) {
-                              e.preventDefault();
-                            }
-                          }}
+                  {/* Lista Alimenti con Animazioni Framer Motion */}
+                  <div className="p-2 space-y-1 overflow-hidden">
+                    <AnimatePresence initial={false} mode="popLayout">
+                      {items.length === 0 ? (
+                        <motion.div
+                          key="empty"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          className="p-4 text-center text-sm text-zinc-600 italic"
                         >
-                          <div>
-                            <div className="font-medium text-sm text-zinc-200">{item.name}</div>
-                            <div className="text-[11px] text-zinc-500"><span className="font-bold text-zinc-300">{item.amount} {item.unit}</span> • P: {item.macros.proteinG}g C: {item.macros.carbsG}g F: {item.macros.fatG}g</div>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <span className="font-semibold text-sm">{Math.round(item.macros.kcal)}</span>
-                            <button 
-                              onClick={() => removeFoodFromMeal(mealConfig.id, item.id)}
-                              className="text-zinc-600 hover:text-red-500 p-1 rounded-md"
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
-                        </div>
-                      ))
-                    )}
+                          Nessun alimento.
+                        </motion.div>
+                      ) : (
+                        items.map(item => (
+                          <motion.div 
+                            key={item.id}
+                            layout
+                            initial={{ opacity: 0, y: -8, scale: 0.97 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, x: -24, scale: 0.95 }}
+                            transition={{ type: 'spring', stiffness: 420, damping: 30 }}
+                            className="flex justify-between items-center p-3 hover:bg-zinc-800/30 active:bg-zinc-800/50 rounded-xl transition-colors group select-none touch-pan-y"
+                            onPointerDown={() => handlePressStart(mealConfig.id, item)}
+                            onPointerUp={handlePressEnd}
+                            onPointerLeave={handlePressEnd}
+                            onPointerCancel={handlePressEnd}
+                            onContextMenu={(e) => {
+                              if (('ontouchstart' in window) || navigator.maxTouchPoints > 0) {
+                                e.preventDefault();
+                              }
+                            }}
+                          >
+                            <div>
+                              <div className="font-medium text-sm text-zinc-200">{item.name}</div>
+                              <div className="text-[11px] text-zinc-500">
+                                <span className="font-bold text-zinc-300">{item.amount} {item.unit}</span> • P: {Math.round(item.macros.proteinG * 10) / 10}g C: {Math.round(item.macros.carbsG * 10) / 10}g F: {Math.round(item.macros.fatG * 10) / 10}g
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <span className="font-semibold text-sm">{Math.round(item.macros.kcal)}</span>
+                              <button 
+                                onClick={() => {
+                                  triggerHaptic(20);
+                                  removeFoodFromMeal(mealConfig.id, item.id);
+                                }}
+                                className="text-zinc-600 hover:text-red-500 active:scale-90 transition-transform p-1 rounded-md"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          </motion.div>
+                        ))
+                      )}
+                    </AnimatePresence>
                   </div>
 
                   {/* Azioni Pasto */}
@@ -255,14 +305,21 @@ export const DiaryDashboard: React.FC = () => {
                     <Button 
                       variant="ghost" 
                       className="flex-1 text-brand-primary hover:text-brand-primary bg-brand-primary/5 hover:bg-brand-primary/10"
-                      onClick={() => navigate(`/search?meal=${mealConfig.id}`)}
+                      onClick={() => {
+                        triggerHaptic(15);
+                        navigate(`/search?meal=${mealConfig.id}`);
+                      }}
                     >
                       <Plus size={16} className="mr-2" /> Aggiungi
                     </Button>
                     <Button 
                       variant="ghost" 
                       className="flex-1 text-zinc-400 bg-zinc-800/30 hover:bg-zinc-800"
-                      onClick={() => { setCopyTargetMeal({ id: mealConfig.id, name: mealConfig.name }); setCopyModalOpen(true); }}
+                      onClick={() => {
+                        triggerHaptic(15);
+                        setCopyTargetMeal({ id: mealConfig.id, name: mealConfig.name });
+                        setCopyModalOpen(true);
+                      }}
                     >
                       <Copy size={16} className="mr-2" /> Clona Pasto
                     </Button>
@@ -282,6 +339,7 @@ export const DiaryDashboard: React.FC = () => {
           targetMealId={copyTargetMeal.id}
           targetMealName={copyTargetMeal.name}
           onConfirmCopy={async (date, sourceId) => {
+            triggerHaptic(25);
             await copyMealFromHistory(date, sourceId, copyTargetMeal.id);
           }}
         />

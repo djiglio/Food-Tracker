@@ -19,13 +19,13 @@
     padding-top: calc(max(env(safe-area-inset-top, 0px), 48px) + 28px);
   }
   .glass {
-    @apply bg-zinc-900/40 backdrop-blur-2xl backdrop-saturate-150 border border-white/5 shadow-2xl;
+    @apply bg-zinc-900/45 backdrop-blur-2xl backdrop-saturate-150 border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.45),inset_0_1px_0_0_rgba(255,255,255,0.12)];
   }
   .glass-header {
-    @apply bg-zinc-950/50 backdrop-blur-3xl backdrop-saturate-150 border-b border-white/5;
+    @apply bg-zinc-950/60 backdrop-blur-3xl backdrop-saturate-150 border-b border-white/10 shadow-[0_4px_24px_0_rgba(0,0,0,0.4)];
   }
   .glass-pill {
-    @apply bg-zinc-900/60 backdrop-blur-2xl backdrop-saturate-150 border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.5)];
+    @apply bg-zinc-900/70 backdrop-blur-3xl backdrop-saturate-150 border border-white/10 shadow-[0_12px_40px_0_rgba(0,0,0,0.65),inset_0_1px_0_0_rgba(255,255,255,0.15)];
   }
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-zinc-100 to-zinc-400;
