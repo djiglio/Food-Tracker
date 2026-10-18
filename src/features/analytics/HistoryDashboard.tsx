@@ -97,11 +97,11 @@ export const HistoryDashboard: React.FC = () => {
   return (
     <div className="flex flex-col pb-8">
       <header className="sticky top-0 z-40 glass-header px-4 pb-3 pt-safe mb-4">
-        <h1 className="text-2xl font-bold tracking-tight text-white">Storico</h1>
-        <p className="text-zinc-400 text-sm">Il calendario dei tuoi progressi giornalieri.</p>
+        <h1 className="text-xl font-semibold tracking-tight text-zinc-100">Storico</h1>
+        <p className="text-zinc-500 text-xs mt-0.5">Il calendario dei tuoi progressi giornalieri</p>
       </header>
 
-      <div className="p-4 space-y-6">
+      <div className="px-4 space-y-6">
         {/* Calendario Compliance & Streak */}
         <ComplianceCalendar
           complianceMap={complianceMap}

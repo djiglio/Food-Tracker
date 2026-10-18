@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Search, ArrowLeft, Plus, ChevronRight, ScanLine, ChefHat, Star, Trash2, Edit2 } from 'lucide-react';
+import { Search, ArrowLeft, Plus, ChevronRight, ScanLine, ChefHat, Star, Clock, Trash2, Edit2 } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { initDB, searchFoods, FoodEntity, getFoodByBarcode, saveFood, deleteFood } from '@/services/db';
@@ -200,57 +200,66 @@ export const SearchDashboard: React.FC = () => {
     return <BarcodeScanner onScan={handleBarcodeScan} onClose={() => setIsScanning(false)} />;
   }
 
-  const filterChips: { id: Exclude<QuickFilter, null>; label: string; emoji: string }[] = [
-    { id: 'favorites', label: 'Preferiti', emoji: '⭐' },
-    { id: 'recipes', label: 'Ricette', emoji: '🍳' },
-    { id: 'recent', label: 'Recenti', emoji: '🕒' },
+  const filterChips: { id: Exclude<QuickFilter, null>; label: string; Icon: React.ElementType }[] = [
+    { id: 'favorites', label: 'Preferiti', Icon: Star },
+    { id: 'recipes', label: 'Ricette', Icon: ChefHat },
+    { id: 'recent', label: 'Recenti', Icon: Clock },
   ];
 
   return (
-    <div className="flex flex-col min-h-full bg-zinc-950">
+    <div className="flex flex-col min-h-full bg-[#09090b]">
       
       {/* Header Ricerca Fissato */}
       <div className="sticky top-0 z-40 glass-header px-4 pb-3 space-y-3 pt-safe">
-        <div className="flex items-center gap-3">
-          <button onClick={() => navigate(-1)} className="p-2 text-zinc-400 hover:text-white active:scale-95 bg-zinc-900 rounded-full shrink-0">
-            <ArrowLeft size={20} />
+        <div className="flex items-center gap-2.5">
+          <button
+            onClick={() => navigate(-1)}
+            className="w-9 h-9 flex items-center justify-center text-zinc-400 hover:text-zinc-100 active:scale-95 bg-[#121215] border border-white/[0.06] rounded-xl shrink-0 transition-colors"
+          >
+            <ArrowLeft size={18} strokeWidth={1.75} />
           </button>
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={18} />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500" size={16} strokeWidth={1.75} />
             <Input 
               autoFocus
-              placeholder="Cerca o scansiona..." 
+              placeholder="Cerca alimento o marca..." 
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="pl-10 pr-12 bg-zinc-900/50 border-zinc-800 focus-visible:ring-brand-primary"
+              className="pl-10 pr-11 h-10 bg-[#121215] border-white/[0.06] rounded-xl text-sm placeholder:text-zinc-500 focus-visible:ring-white/20"
             />
             <button 
               onClick={() => setIsScanning(true)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-zinc-400 hover:text-brand-primary active:scale-95 transition-colors"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-zinc-400 hover:text-zinc-100 active:scale-95 transition-colors"
             >
-              <ScanLine size={20} />
+              <ScanLine size={18} strokeWidth={1.75} />
             </button>
           </div>
         </div>
 
-        {/* Filtro rapido a chips orizzontali */}
+        {/* Filtro rapido a chips orizzontali con icone vettoriali */}
         <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-0.5 -mx-1 px-1">
-          {filterChips.map((chip) => {
-            const isSelected = activeFilter === chip.id;
+          {filterChips.map(({ id, label, Icon }) => {
+            const isSelected = activeFilter === id;
             return (
               <button
-                key={chip.id}
+                key={id}
                 type="button"
-                onClick={() => toggleQuickFilter(chip.id)}
+                onClick={() => toggleQuickFilter(id)}
                 className={cn(
-                  "shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 active:scale-95 border",
+                  "shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all duration-150 active:scale-95 border",
                   isSelected
-                    ? "bg-brand-primary/20 text-brand-primary border-brand-primary/50 shadow-[0_0_12px_rgba(16,185,129,0.25)]"
-                    : "bg-zinc-900/60 text-zinc-400 border-white/10 hover:text-zinc-200 hover:bg-zinc-800/70"
+                    ? "bg-zinc-100 text-zinc-950 border-zinc-100 shadow-sm font-semibold"
+                    : "bg-[#121215] text-zinc-400 border-white/[0.06] hover:text-zinc-200 hover:bg-[#18181c]"
                 )}
               >
-                <span>{chip.emoji}</span>
-                <span>{chip.label}</span>
+                <Icon
+                  size={13.5}
+                  strokeWidth={1.75}
+                  className={cn(
+                    id === 'favorites' && isSelected && "fill-zinc-950"
+                  )}
+                />
+                <span>{label}</span>
               </button>
             );
           })}
@@ -258,11 +267,11 @@ export const SearchDashboard: React.FC = () => {
       </div>
 
       {/* Lista Risultati Scorrevole */}
-      <div className="flex-1 p-4 space-y-2">
+      <div className="flex-1 p-4 space-y-2.5">
         {filteredResults.length === 0 ? (
-          <div className="text-center py-10 space-y-4">
-            <div className="mx-auto w-16 h-16 bg-zinc-900 rounded-full flex items-center justify-center text-zinc-700 mb-4">
-              <Search size={32} />
+          <div className="text-center py-12 space-y-4">
+            <div className="mx-auto w-14 h-14 bg-[#121215] border border-white/[0.06] rounded-2xl flex items-center justify-center text-zinc-600 mb-3">
+              <Search size={24} strokeWidth={1.75} />
             </div>
             <p className="text-zinc-500 text-sm">
               {query || activeFilter
@@ -271,23 +280,29 @@ export const SearchDashboard: React.FC = () => {
             </p>
             <div className="mt-4 flex flex-col gap-2 w-full max-w-xs mx-auto">
               <Button variant="secondary" onClick={() => setIsCreatingRecipe(true)} className="w-full">
-                <ChefHat size={18} className="mr-2" /> Crea Ricetta Composta
+                <ChefHat size={17} strokeWidth={1.75} className="mr-2" /> Crea ricetta composta
               </Button>
               <Button variant="ghost" onClick={() => setIsCreating(true)} className="w-full text-zinc-400">
-                <Plus size={18} className="mr-2" /> Crea Alimento Custom
+                <Plus size={17} strokeWidth={1.75} className="mr-2" /> Crea alimento personalizzato
               </Button>
             </div>
           </div>
         ) : (
           <>
-            <div className="flex justify-between items-center mb-2 px-1">
-              <span className="text-xs font-bold tracking-widest uppercase text-zinc-500">I Miei Alimenti</span>
-              <div className="flex gap-3">
-                <button onClick={() => setIsCreatingRecipe(true)} className="text-xs text-brand-primary font-semibold flex items-center">
-                  <Plus size={14} className="mr-1" /> Ricetta
+            <div className="flex justify-between items-center mb-1.5 px-1">
+              <span className="text-xs font-medium text-zinc-500">I miei alimenti</span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setIsCreatingRecipe(true)}
+                  className="text-xs text-zinc-300 hover:text-white bg-[#121215] border border-white/[0.06] px-2.5 py-1 rounded-lg font-medium flex items-center gap-1 active:scale-95 transition-all"
+                >
+                  <Plus size={13} strokeWidth={2} /> Ricetta
                 </button>
-                <button onClick={() => setIsCreating(true)} className="text-xs text-brand-primary font-semibold flex items-center">
-                  <Plus size={14} className="mr-1" /> Alimento
+                <button
+                  onClick={() => setIsCreating(true)}
+                  className="text-xs text-zinc-300 hover:text-white bg-[#121215] border border-white/[0.06] px-2.5 py-1 rounded-lg font-medium flex items-center gap-1 active:scale-95 transition-all"
+                >
+                  <Plus size={13} strokeWidth={2} /> Alimento
                 </button>
               </div>
             </div>
@@ -300,35 +315,46 @@ export const SearchDashboard: React.FC = () => {
                   setFoodToEdit(food);
                   setIsCreating(true);
                 }}
-                leftActionContent={<><Edit2 size={24} className="mr-3" /> Modifica</>}
-                rightActionContent={<>Elimina <Trash2 size={24} className="ml-3" /></>}
+                leftActionContent={<><Edit2 size={20} strokeWidth={1.75} className="mr-2" /> Modifica</>}
+                rightActionContent={<>Elimina <Trash2 size={20} strokeWidth={1.75} className="ml-2" /></>}
                 swipeThreshold={70}
                 maxSwipe={120}
               >
                 <div 
                   onClick={() => setSelectedFood(food)}
-                  className="w-full text-left p-4 flex items-center justify-between cursor-pointer hover:bg-zinc-800/60 transition-colors"
+                  className="w-full text-left px-4 py-3.5 flex items-center justify-between cursor-pointer hover:bg-white/[0.02] transition-colors"
                 >
-                  <div>
-                    <h3 className="font-semibold text-white leading-tight flex items-center gap-2">
-                      {food.name}
-                      {food.isFavorite && <Star size={12} className="text-amber-400 fill-amber-400" />}
+                  <div className="min-w-0 pr-3">
+                    <h3 className="text-[15px] font-medium text-zinc-100 leading-snug flex items-center gap-2 truncate">
+                      <span className="truncate">{food.name}</span>
+                      {food.isRecipe && (
+                        <span className="shrink-0 text-[10px] font-medium text-zinc-400 bg-white/[0.05] border border-white/[0.06] px-1.5 py-0.5 rounded-md">
+                          Ricetta
+                        </span>
+                      )}
                     </h3>
-                    <div className="text-xs text-zinc-500 mt-1 flex items-center gap-2">
-                      {food.brand && <span className="bg-zinc-800 px-1.5 py-0.5 rounded text-[10px]">{food.brand}</span>}
-                      <span>{food.kcalPer100} kcal / 100g</span>
+                    <div className="text-xs text-zinc-500 mt-1 flex items-center gap-2 tabular-nums">
+                      {food.brand && (
+                        <span className="text-zinc-400 font-medium truncate max-w-[140px]">
+                          {food.brand} ·
+                        </span>
+                      )}
+                      <span className="text-zinc-400 font-medium">{food.kcalPer100} kcal</span>
+                      <span className="text-zinc-600">/ 100g</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2 shrink-0">
                     <button 
                       onClick={(e) => toggleFavorite(e, food)}
-                      className="p-2 -mr-2 text-zinc-600 hover:text-amber-400 active:scale-95 transition-all"
+                      className="p-2 text-zinc-600 hover:text-amber-400 active:scale-90 transition-all"
                     >
-                      <Star size={18} className={food.isFavorite ? "text-amber-400 fill-amber-400" : ""} />
+                      <Star
+                        size={16}
+                        strokeWidth={1.75}
+                        className={food.isFavorite ? "text-amber-400 fill-amber-400" : ""}
+                      />
                     </button>
-                    <div className="text-zinc-600 group-hover:text-brand-primary transition-colors">
-                      <ChevronRight size={20} />
-                    </div>
+                    <ChevronRight size={16} strokeWidth={1.75} className="text-zinc-600" />
                   </div>
                 </div>
               </SwipeableItem>
@@ -346,14 +372,14 @@ export const SearchDashboard: React.FC = () => {
 
       {/* Modal Conferma Eliminazione */}
       {itemToDelete && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-3xl w-full max-w-sm shadow-2xl animate-in zoom-in-95 duration-200">
-            <h3 className="text-xl font-bold text-white mb-2">Elimina Alimento</h3>
-            <p className="text-zinc-400 mb-6 text-sm">
-              Sei sicuro di voler eliminare definitivamente "{itemToDelete.name}"? Questa azione non può essere annullata.
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-[#121215] border border-white/[0.08] p-6 rounded-2xl w-full max-w-sm shadow-2xl animate-in zoom-in-95 duration-200">
+            <h3 className="text-lg font-semibold tracking-tight text-zinc-100 mb-1.5">Elimina alimento</h3>
+            <p className="text-zinc-400 mb-6 text-sm leading-relaxed">
+              Vuoi eliminare definitivamente "{itemToDelete.name}"? Questa azione non può essere annullata.
             </p>
-            <div className="flex gap-3">
-              <Button variant="ghost" fullWidth onClick={() => setItemToDelete(null)}>Annulla</Button>
+            <div className="flex gap-2.5">
+              <Button variant="secondary" fullWidth onClick={() => setItemToDelete(null)}>Annulla</Button>
               <Button variant="danger" fullWidth onClick={handleDeleteConfirm}>Elimina</Button>
             </div>
           </div>

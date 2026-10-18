@@ -4,7 +4,7 @@ import { useUserStore } from '@/store/userStore';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { Target, Beef, Wheat, Droplet, Clock, Database, Share, SlidersHorizontal, ChevronRight, Cloud, LogOut, Edit2, ArrowUp, ArrowDown, Trash2, Plus, AlertTriangle, Check, X } from 'lucide-react';
+import { Clock, Database, Share, SlidersHorizontal, ChevronRight, Cloud, LogOut, Edit2, ArrowUp, ArrowDown, Trash2, Plus, AlertTriangle, Check, X } from 'lucide-react';
 import { exportAllData } from '@/core/export';
 import { loginWithGoogle, logoutGoogle, auth } from '@/services/firebase';
 import { MealTargetConfig } from '@/core/metabolism';
@@ -109,296 +109,298 @@ export const ProfileDashboard: React.FC = () => {
     setIsEditingMeals(false);
   };
 
+  const macroSplit = [
+    {
+      label: 'Proteine',
+      grams: dailyTarget.proteinG,
+      perc: Math.round(((dailyTarget.proteinG * 4) / dailyTarget.kcal) * 100),
+      dotColor: 'bg-indigo-400',
+    },
+    {
+      label: 'Carbo',
+      grams: dailyTarget.carbsG,
+      perc: Math.round(((dailyTarget.carbsG * 4) / dailyTarget.kcal) * 100),
+      dotColor: 'bg-amber-400',
+    },
+    {
+      label: 'Grassi',
+      grams: dailyTarget.fatG,
+      perc: Math.round(((dailyTarget.fatG * 9) / dailyTarget.kcal) * 100),
+      dotColor: 'bg-rose-400',
+    },
+  ];
+
   return (
     <div className="flex flex-col pb-8">
       <header className="sticky top-0 z-40 glass-header px-4 pb-3 pt-safe mb-4">
-        <h1 className="text-2xl font-bold tracking-tight">Profilo & Obiettivi</h1>
-        <p className="text-zinc-400 text-sm">Dashboard metabolica in tempo reale.</p>
+        <h1 className="text-xl font-semibold tracking-tight text-zinc-100">Profilo e obiettivi</h1>
+        <p className="text-zinc-500 text-xs mt-0.5">Parametri metabolici e configurazione pasti</p>
       </header>
 
       <div className="px-4 space-y-6">
-      {/* Target Principale */}
-      <Card className="bg-gradient-to-br from-zinc-850 to-zinc-900 border-brand-primary/20">
-        <CardContent className="pt-6 text-center relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-3">
-            <span className="px-2 py-1 bg-zinc-950 text-[10px] uppercase tracking-widest text-zinc-500 rounded-lg border border-zinc-800">
-              {goal === 'cut' ? 'Perdita Peso' : goal === 'bulk' ? 'Massa' : 'Mantenimento'}
-            </span>
-          </div>
-          <div className="mx-auto bg-brand-primary/10 w-16 h-16 rounded-full flex items-center justify-center mb-4">
-            <Target className="text-brand-primary" size={32} />
-          </div>
-          <div className="text-sm font-semibold text-zinc-400 uppercase tracking-widest">Target Giornaliero</div>
-          <div className="text-5xl font-black text-white">{dailyTarget.kcal} <span className="text-xl text-zinc-500 font-medium">kcal</span></div>
-        </CardContent>
-      </Card>
-
-      {/* Macronutrienti Split Premium */}
-      <div>
-        <h3 className="text-sm font-bold tracking-widest uppercase text-zinc-500 mb-3 ml-1">Split Macronutrienti</h3>
-        <div className="grid grid-cols-3 gap-3">
-          <Card className="border-violet-900/50 bg-violet-950/20">
-            <CardContent className="p-4 text-center">
-              <Beef className="mx-auto text-violet-500 mb-2" size={24} strokeWidth={1.5} />
-              <div className="text-xl font-bold text-white">{dailyTarget.proteinG}g</div>
-              <div className="text-[10px] text-zinc-400 uppercase tracking-wider font-semibold mt-1">Proteine</div>
-              <div className="text-[9px] text-zinc-500">{Math.round((dailyTarget.proteinG*4/dailyTarget.kcal)*100)}%</div>
-            </CardContent>
-          </Card>
-          
-          <Card className="border-amber-900/50 bg-amber-950/20">
-            <CardContent className="p-4 text-center">
-              <Wheat className="mx-auto text-amber-500 mb-2" size={24} strokeWidth={1.5} />
-              <div className="text-xl font-bold text-white">{dailyTarget.carbsG}g</div>
-              <div className="text-[10px] text-zinc-400 uppercase tracking-wider font-semibold mt-1">Carbo</div>
-              <div className="text-[9px] text-zinc-500">{Math.round((dailyTarget.carbsG*4/dailyTarget.kcal)*100)}%</div>
-            </CardContent>
-          </Card>
-          
-          <Card className="border-rose-900/50 bg-rose-950/20">
-            <CardContent className="p-4 text-center">
-              <Droplet className="mx-auto text-rose-500 mb-2" size={24} strokeWidth={1.5} />
-              <div className="text-xl font-bold text-white">{dailyTarget.fatG}g</div>
-              <div className="text-[10px] text-zinc-400 uppercase tracking-wider font-semibold mt-1">Grassi</div>
-              <div className="text-[9px] text-zinc-500">{Math.round((dailyTarget.fatG*9/dailyTarget.kcal)*100)}%</div>
-            </CardContent>
-          </Card>
-        </div>
-        
-        <div className="mt-3">
-          <button 
-            onClick={() => navigate('/profile/macro-cycling')}
-            className="w-full flex items-center justify-between p-3 rounded-xl bg-zinc-900/50 hover:bg-zinc-800/80 transition-colors border border-zinc-800 active:scale-95"
-          >
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-brand-primary/10 text-brand-primary rounded-lg">
-                <SlidersHorizontal size={18} />
+        {/* Target Principale */}
+        <Card>
+          <CardContent className="p-5 flex items-center justify-between tabular-nums">
+            <div>
+              <div className="text-xs font-medium text-zinc-400 mb-1">Fabbisogno giornaliero</div>
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-4xl font-semibold tracking-tight text-zinc-100">{dailyTarget.kcal}</span>
+                <span className="text-sm text-zinc-500 font-medium">kcal</span>
               </div>
-              <div className="text-left">
-                <div className="text-sm font-semibold text-white">Gestione Macro-Cycling</div>
-                <div className="text-[11px] text-zinc-500">
-                  {activeTarget.isMacroCyclingEnabled ? 'Attivo (Giorni personalizzati)' : 'Disattivato (Target uniforme)'}
+            </div>
+            <span className="px-2.5 py-1 bg-[#18181c] text-xs font-medium text-zinc-300 rounded-lg border border-white/[0.06]">
+              {goal === 'cut' ? 'Definizione' : goal === 'bulk' ? 'Massa' : 'Mantenimento'}
+            </span>
+          </CardContent>
+        </Card>
+
+        {/* Macronutrienti Split — Unified Matte Graphite + 6px Colored Dots */}
+        <div>
+          <h3 className="text-xs font-medium text-zinc-500 mb-2.5 px-1">Ripartizione macronutrienti</h3>
+          <div className="grid grid-cols-3 gap-2.5 tabular-nums">
+            {macroSplit.map((m) => (
+              <Card key={m.label}>
+                <CardContent className="p-3.5">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-1.5">
+                      <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", m.dotColor)} />
+                      <span className="text-xs font-medium text-zinc-400">{m.label}</span>
+                    </div>
+                  </div>
+                  <div className="text-xl font-semibold tracking-tight text-zinc-100">{m.grams}g</div>
+                  <div className="text-[11px] text-zinc-500 mt-0.5">{m.perc}% delle kcal</div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          
+          <div className="mt-2.5">
+            <button 
+              onClick={() => navigate('/profile/macro-cycling')}
+              className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-[#121215] hover:bg-[#16161a] transition-colors border border-white/[0.06] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)] active:scale-[0.99]"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 bg-[#18181c] border border-white/[0.06] text-zinc-300 rounded-xl flex items-center justify-center">
+                  <SlidersHorizontal size={16} strokeWidth={1.75} />
+                </div>
+                <div className="text-left">
+                  <div className="text-sm font-medium text-zinc-100">Ciclizzazione dei carboidrati</div>
+                  <div className="text-xs text-zinc-500">
+                    {activeTarget.isMacroCyclingEnabled ? 'Attiva · Giorni personalizzati' : 'Disattivata · Target uniforme'}
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="text-[10px] uppercase font-bold tracking-widest text-brand-primary bg-brand-primary/10 px-2 py-1 rounded-full">
-              Configura
-            </div>
-          </button>
-        </div>
-      </div>
-
-      {/* Ripartizione Pasti */}
-      <div>
-        <div className="flex items-center justify-between mb-3 ml-1">
-          <h3 className="text-sm font-bold tracking-widest uppercase text-zinc-500">Ripartizione Pasti</h3>
-          {!isEditingMeals ? (
-            <button
-              onClick={startEditingMeals}
-              className="flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-widest text-brand-primary bg-brand-primary/10 hover:bg-brand-primary/20 px-2.5 py-1 rounded-full transition-colors active:scale-95"
-            >
-              <Edit2 size={12} />
-              Modifica
+              <div className="flex items-center gap-1 text-xs font-medium text-zinc-400">
+                <span>Configura</span>
+                <ChevronRight size={15} strokeWidth={1.75} />
+              </div>
             </button>
+          </div>
+        </div>
+
+        {/* Ripartizione Pasti */}
+        <div>
+          <div className="flex items-center justify-between mb-2.5 px-1">
+            <h3 className="text-xs font-medium text-zinc-500">Ripartizione pasti</h3>
+            {!isEditingMeals ? (
+              <button
+                onClick={startEditingMeals}
+                className="flex items-center gap-1.5 text-xs font-medium text-zinc-300 hover:text-white bg-[#121215] border border-white/[0.06] px-2.5 py-1 rounded-lg transition-colors active:scale-95"
+              >
+                <Edit2 size={12} strokeWidth={1.75} />
+                Modifica
+              </button>
+            ) : (
+              <span className={cn("text-xs font-semibold tabular-nums", mealsTotalPerc === 100 ? "text-emerald-400" : "text-rose-400")}>
+                Totale: {mealsTotalPerc}%
+              </span>
+            )}
+          </div>
+
+          {!isEditingMeals ? (
+            <Card>
+              <CardContent className="p-0 divide-y divide-white/[0.04] tabular-nums">
+                {meals.map((meal) => (
+                  <div key={meal.id} className="flex justify-between items-center px-4 py-3.5">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-[#18181c] border border-white/[0.05] rounded-xl flex items-center justify-center text-zinc-400">
+                        <Clock size={15} strokeWidth={1.75} />
+                      </div>
+                      <span className="text-sm font-medium text-zinc-100">{meal.name}</span>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-semibold text-zinc-100">{Math.round(meal.percentage * 100)}%</div>
+                      <div className="text-[11px] text-zinc-500">{Math.round(dailyTarget.kcal * meal.percentage)} kcal</div>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
           ) : (
-            <span className={cn("text-xs font-bold", mealsTotalPerc === 100 ? "text-brand-primary" : "text-red-500")}>
-              Totale: {mealsTotalPerc}%
-            </span>
+            <Card>
+              <CardContent className="p-4 space-y-3 tabular-nums">
+                <div className="space-y-2.5">
+                  {draftMeals.map((meal, index) => {
+                    const mealPerc = parseInt(meal.percStr) || 0;
+                    const mealKcal = Math.round(dailyTarget.kcal * (mealPerc / 100));
+                    return (
+                      <div key={meal.id} className="flex items-center gap-2 p-2.5 bg-[#18181c] border border-white/[0.06] rounded-xl">
+                        <div className="flex flex-col gap-1 shrink-0">
+                          <button
+                            type="button"
+                            disabled={index === 0}
+                            onClick={() => moveMeal(index, 'up')}
+                            className="p-1 text-zinc-500 hover:text-zinc-200 disabled:opacity-30"
+                          >
+                            <ArrowUp size={14} strokeWidth={1.75} />
+                          </button>
+                          <button
+                            type="button"
+                            disabled={index === draftMeals.length - 1}
+                            onClick={() => moveMeal(index, 'down')}
+                            className="p-1 text-zinc-500 hover:text-zinc-200 disabled:opacity-30"
+                          >
+                            <ArrowDown size={14} strokeWidth={1.75} />
+                          </button>
+                        </div>
+
+                        <div className="flex-1 space-y-1.5">
+                          <Input
+                            value={meal.name}
+                            onChange={(e) => updateMeal(index, 'name', e.target.value)}
+                            className="h-8 text-sm font-medium bg-transparent border-none px-1"
+                            placeholder="Nome pasto"
+                          />
+                          <div className="flex items-center gap-2">
+                            <div className="relative flex-1">
+                              <Input
+                                type="number"
+                                value={meal.percStr}
+                                onChange={(e) => updateMeal(index, 'percStr', e.target.value)}
+                                className="h-8 text-sm pr-6 bg-[#09090b] border-white/[0.06] rounded-lg"
+                              />
+                              <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-zinc-500">%</span>
+                            </div>
+                            <span className="text-xs text-zinc-500 min-w-[65px] text-right font-medium">
+                              {mealKcal} kcal
+                            </span>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          disabled={draftMeals.length <= 1}
+                          onClick={() => deleteMeal(index)}
+                          className="p-2 text-zinc-500 hover:text-rose-400 disabled:opacity-30 shrink-0"
+                        >
+                          <Trash2 size={16} strokeWidth={1.75} />
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <Button
+                  variant="secondary"
+                  fullWidth
+                  onClick={addMeal}
+                  className="text-zinc-300 border-dashed border border-white/[0.1]"
+                >
+                  <Plus size={15} strokeWidth={2} className="mr-1.5" /> Aggiungi pasto
+                </Button>
+
+                {mealsTotalPerc !== 100 && (
+                  <div className="bg-rose-500/10 border border-rose-500/20 p-3 rounded-xl flex gap-2 items-start text-xs text-rose-300">
+                    <AlertTriangle size={15} strokeWidth={1.75} className="text-rose-400 shrink-0 mt-0.5" />
+                    <p>La somma delle percentuali deve essere esattamente 100% (attualmente {mealsTotalPerc}%).</p>
+                  </div>
+                )}
+
+                <div className="flex gap-2 pt-1">
+                  <Button
+                    variant="secondary"
+                    className="flex-1"
+                    onClick={() => setIsEditingMeals(false)}
+                  >
+                    <X size={15} strokeWidth={1.75} className="mr-1.5" /> Annulla
+                  </Button>
+                  <Button
+                    variant="primary"
+                    className="flex-1"
+                    disabled={mealsTotalPerc !== 100}
+                    onClick={handleSaveMeals}
+                  >
+                    <Check size={15} strokeWidth={2} className="mr-1.5" /> Salva pasti
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           )}
         </div>
 
-        {!isEditingMeals ? (
-          <Card className="border-zinc-800">
-            <CardContent className="p-0 divide-y divide-zinc-800/50">
-              {meals.map((meal) => (
-                <div key={meal.id} className="flex justify-between items-center p-4">
+        {/* Data & Privacy Section */}
+        <div>
+          <h3 className="text-xs font-medium text-zinc-500 mb-2.5 px-1">Dati e sincronizzazione</h3>
+          <Card>
+            <CardContent className="p-0 divide-y divide-white/[0.04]">
+              <button 
+                onClick={exportAllData}
+                className="w-full flex items-center justify-between px-4 py-3.5 hover:bg-white/[0.02] transition-colors text-left active:scale-[0.99]"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 bg-[#18181c] border border-white/[0.06] text-zinc-300 rounded-xl flex items-center justify-center">
+                    <Database size={16} strokeWidth={1.75} />
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-zinc-100">Esporta backup JSON</div>
+                    <div className="text-xs text-zinc-500">Salva una copia completa sul dispositivo</div>
+                  </div>
+                </div>
+                <Share size={15} strokeWidth={1.75} className="text-zinc-500" />
+              </button>
+
+              {!user ? (
+                <button 
+                  onClick={loginWithGoogle}
+                  className="w-full flex items-center justify-between px-4 py-3.5 hover:bg-white/[0.02] transition-colors text-left active:scale-[0.99]"
+                >
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-zinc-900 rounded-full text-zinc-500">
-                      <Clock size={16} />
+                    <div className="w-9 h-9 bg-[#18181c] border border-white/[0.06] text-zinc-300 rounded-xl flex items-center justify-center">
+                      <Cloud size={16} strokeWidth={1.75} />
                     </div>
-                    <span className="font-medium">{meal.name}</span>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-brand-primary font-bold">{Math.round(meal.percentage * 100)}%</div>
-                    <div className="text-[10px] text-zinc-500">{Math.round(dailyTarget.kcal * meal.percentage)} kcal</div>
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        ) : (
-          <Card className="border-brand-primary/30 bg-zinc-900/50">
-            <CardContent className="p-4 space-y-3">
-              <div className="space-y-2.5">
-                {draftMeals.map((meal, index) => {
-                  const mealPerc = parseInt(meal.percStr) || 0;
-                  const mealKcal = Math.round(dailyTarget.kcal * (mealPerc / 100));
-                  return (
-                    <div key={meal.id} className="flex items-center gap-2 p-2.5 bg-zinc-900 border border-zinc-800 rounded-2xl">
-                      <div className="flex flex-col gap-1 shrink-0">
-                        <button
-                          type="button"
-                          disabled={index === 0}
-                          onClick={() => moveMeal(index, 'up')}
-                          className="p-1 text-zinc-500 hover:text-white disabled:opacity-30"
-                        >
-                          <ArrowUp size={15} />
-                        </button>
-                        <button
-                          type="button"
-                          disabled={index === draftMeals.length - 1}
-                          onClick={() => moveMeal(index, 'down')}
-                          className="p-1 text-zinc-500 hover:text-white disabled:opacity-30"
-                        >
-                          <ArrowDown size={15} />
-                        </button>
-                      </div>
-
-                      <div className="flex-1 space-y-1.5">
-                        <Input
-                          value={meal.name}
-                          onChange={(e) => updateMeal(index, 'name', e.target.value)}
-                          className="h-8 text-sm font-semibold bg-transparent border-none px-1"
-                          placeholder="Nome Pasto"
-                        />
-                        <div className="flex items-center gap-2">
-                          <div className="relative flex-1">
-                            <Input
-                              type="number"
-                              value={meal.percStr}
-                              onChange={(e) => updateMeal(index, 'percStr', e.target.value)}
-                              className="h-8 text-sm pr-6 bg-zinc-950 border-zinc-800"
-                            />
-                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-500">%</span>
-                          </div>
-                          <span className="text-xs text-zinc-500 min-w-[65px] text-right font-medium">
-                            {mealKcal} kcal
-                          </span>
-                        </div>
-                      </div>
-
-                      <button
-                        type="button"
-                        disabled={draftMeals.length <= 1}
-                        onClick={() => deleteMeal(index)}
-                        className="p-2.5 text-zinc-500 hover:text-red-500 disabled:opacity-30 shrink-0"
-                      >
-                        <Trash2 size={18} />
-                      </button>
+                    <div>
+                      <div className="text-sm font-medium text-zinc-100">Accedi con Google</div>
+                      <div className="text-xs text-zinc-500">Sincronizzazione cloud automatica</div>
                     </div>
-                  );
-                })}
-              </div>
-
-              <Button
-                variant="secondary"
-                fullWidth
-                onClick={addMeal}
-                className="text-zinc-400 border-dashed border-2 border-zinc-800 hover:bg-zinc-800"
-              >
-                <Plus size={16} className="mr-2" /> Aggiungi Pasto
-              </Button>
-
-              {mealsTotalPerc !== 100 && (
-                <div className="bg-red-950/30 border border-red-900/50 p-3 rounded-xl flex gap-2 items-start text-xs text-red-200">
-                  <AlertTriangle size={16} className="text-red-500 shrink-0 mt-0.5" />
-                  <p>La somma delle percentuali deve essere esattamente 100% (attualmente {mealsTotalPerc}%).</p>
-                </div>
+                  </div>
+                  <ChevronRight size={15} strokeWidth={1.75} className="text-zinc-500" />
+                </button>
+              ) : (
+                <button 
+                  onClick={logoutGoogle}
+                  className="w-full flex items-center justify-between px-4 py-3.5 hover:bg-white/[0.02] transition-colors text-left active:scale-[0.99]"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-xl flex items-center justify-center">
+                      <LogOut size={16} strokeWidth={1.75} />
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-zinc-100">Disconnetti account</div>
+                      <div className="text-xs text-zinc-500">{user.email}</div>
+                    </div>
+                  </div>
+                  <ChevronRight size={15} strokeWidth={1.75} className="text-zinc-500" />
+                </button>
               )}
-
-              <div className="flex gap-2 pt-2">
-                <Button
-                  variant="ghost"
-                  className="flex-1"
-                  onClick={() => setIsEditingMeals(false)}
-                >
-                  <X size={16} className="mr-1.5" /> Annulla
-                </Button>
-                <Button
-                  variant="primary"
-                  className="flex-1"
-                  disabled={mealsTotalPerc !== 100}
-                  onClick={handleSaveMeals}
-                >
-                  <Check size={16} className="mr-1.5" /> Salva Pasti
-                </Button>
-              </div>
             </CardContent>
           </Card>
-        )}
-      </div>
+        </div>
 
-      {/* Data & Privacy Section */}
-      <div className="pt-2">
-        <h3 className="text-sm font-bold tracking-widest uppercase text-zinc-500 mb-3 ml-1">Dati e Privacy</h3>
-        <Card className="border-zinc-800 bg-zinc-900/50">
-          <CardContent className="p-2 space-y-1">
-            <button 
-              onClick={exportAllData}
-              className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-zinc-800/80 transition-colors text-left active:scale-95"
-            >
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-emerald-500/10 text-emerald-500 rounded-lg">
-                  <Database size={18} />
-                </div>
-                <div>
-                  <div className="text-sm font-semibold text-white">Esporta Dati (JSON)</div>
-                  <div className="text-[11px] text-zinc-500">Salva un backup completo offline</div>
-                </div>
-              </div>
-              <Share size={16} className="text-zinc-600" />
-            </button>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Cloud & Account */}
-      <div className="pt-2">
-        <h3 className="text-sm font-bold tracking-widest uppercase text-zinc-500 mb-3 ml-1">Account & Cloud Sync</h3>
-        <Card className="border-zinc-800 bg-zinc-900/50">
-          <CardContent className="p-2 space-y-1">
-            {!user ? (
-              <button 
-                onClick={loginWithGoogle}
-                className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-zinc-800/80 transition-colors text-left active:scale-95"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-blue-500/10 text-blue-500 rounded-lg">
-                    <Cloud size={18} />
-                  </div>
-                  <div>
-                    <div className="text-sm font-semibold text-white">Accedi con Google</div>
-                    <div className="text-[11px] text-zinc-500">Abilita il backup Cloud automatico</div>
-                  </div>
-                </div>
-                <ChevronRight size={16} className="text-zinc-600" />
-              </button>
-            ) : (
-              <button 
-                onClick={logoutGoogle}
-                className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-zinc-800/80 transition-colors text-left active:scale-95"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-red-500/10 text-red-500 rounded-lg">
-                    <LogOut size={18} />
-                  </div>
-                  <div>
-                    <div className="text-sm font-semibold text-white">Disconnetti ({user.email})</div>
-                    <div className="text-[11px] text-zinc-500">I dati restano sul dispositivo</div>
-                  </div>
-                </div>
-                <ChevronRight size={16} className="text-zinc-600" />
-              </button>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="pt-4 space-y-3">
-        <Button variant="secondary" fullWidth onClick={handleRecalculate}>
-          Resetta Profilo & Ricalcola
-        </Button>
-      </div>
+        <div className="pt-2">
+          <Button variant="secondary" fullWidth onClick={handleRecalculate}>
+            Ricalcola fabbisogno da zero
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -8,19 +8,18 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Palette Premium Anti-AI (Zinc predominante per la dark mode, verde smeraldo per compliance)
         zinc: {
-          850: '#202022',
-          900: '#18181b', // Background principale
-          950: '#09090b', // Background profondo
+          850: '#161619',
+          900: '#121215', // Superficie Livello 1 (Card opache)
+          950: '#09090b', // Canvas OLED Livello 0
         },
         brand: {
-          primary: '#10b981', // Smeraldo (Compliance OK)
-          danger: '#ef4444', // Rosso (Fuori Target)
+          primary: '#34d399', // Verde salvia/menta desaturato (Compliance OK)
+          danger: '#fb7185', // Corallo/Rosa antico (Fuori Target)
         }
       },
       fontFamily: {
-        sans: ['Outfit', 'system-ui', 'sans-serif'],
+        sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', 'Inter', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
         'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',

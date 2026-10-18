@@ -20,7 +20,7 @@ const Layout: React.FC = () => {
   }, [setOfflineMode]);
 
   return (
-    <div className="flex flex-col h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-zinc-950 to-black text-zinc-50 overflow-hidden relative selection:bg-brand-primary/30">
+    <div className="flex flex-col h-screen bg-[#09090b] text-zinc-100 overflow-hidden relative selection:bg-zinc-700/50">
       <main className="flex-1 overflow-y-auto pb-[7rem]">
         {/* L'Outlet renderizza le route figlie */}
         <Outlet />

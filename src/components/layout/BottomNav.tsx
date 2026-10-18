@@ -20,8 +20,8 @@ const BottomNav: React.FC = () => {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 p-4 pb-[max(env(safe-area-inset-bottom,16px),16px)] pointer-events-none">
-      <nav className="glass-pill rounded-3xl mx-auto max-w-md pointer-events-auto transition-transform duration-300 relative overflow-hidden">
-        <div className="flex items-center justify-around h-[4.25rem] px-2">
+      <nav className="glass-pill rounded-2xl mx-auto max-w-md pointer-events-auto transition-transform duration-300 relative overflow-hidden">
+        <div className="flex items-center justify-around h-[3.85rem] px-1.5">
           {navItems.map((item) => (
             <NavLink
               key={item.path}
@@ -29,8 +29,8 @@ const BottomNav: React.FC = () => {
               onClick={triggerHaptic}
               className={({ isActive }) =>
                 cn(
-                  "flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors duration-300 relative group",
-                  isActive ? "text-brand-primary" : "text-zinc-500 hover:text-zinc-300"
+                  "flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors duration-200 relative group",
+                  isActive ? "text-zinc-100" : "text-zinc-500 hover:text-zinc-300"
                 )
               }
             >
@@ -38,17 +38,17 @@ const BottomNav: React.FC = () => {
                 <>
                   {isActive && (
                     <>
-                      {/* Top luminous glow reflection */}
+                      {/* Subtle top specular reflection */}
                       <motion.div
                         layoutId="bottomNavTopGlow"
-                        className="absolute top-0 w-10 h-[3px] rounded-b-full bg-brand-primary shadow-[0_2px_12px_2px_rgba(16,185,129,0.8)]"
-                        transition={{ type: 'spring', stiffness: 380, damping: 28 }}
+                        className="absolute top-0 w-7 h-[2px] rounded-b-full bg-zinc-100 shadow-[0_1px_8px_rgba(255,255,255,0.45)]"
+                        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                       />
-                      {/* Soft radial spotlight behind active tab */}
+                      {/* Soft matte pill behind active tab */}
                       <motion.div
                         layoutId="bottomNavSpotlight"
-                        className="absolute inset-x-3 inset-y-1.5 rounded-2xl bg-gradient-to-b from-brand-primary/15 via-brand-primary/5 to-transparent pointer-events-none"
-                        transition={{ type: 'spring', stiffness: 380, damping: 28 }}
+                        className="absolute inset-x-2.5 inset-y-1.5 rounded-xl bg-white/[0.06] pointer-events-none"
+                        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                       />
                     </>
                   )}
@@ -56,27 +56,24 @@ const BottomNav: React.FC = () => {
                     className="relative z-10"
                     animate={
                       isActive
-                        ? { y: [0, -5, 0], scale: 1.12 }
+                        ? { y: [0, -3, 0], scale: 1.05 }
                         : { y: 0, scale: 1 }
                     }
                     transition={{
-                      y: { duration: 0.35, ease: 'easeOut' },
-                      scale: { type: 'spring', stiffness: 400, damping: 18 },
+                      y: { duration: 0.28, ease: 'easeOut' },
+                      scale: { type: 'spring', stiffness: 420, damping: 22 },
                     }}
                   >
                     <item.icon
-                      size={22}
-                      strokeWidth={isActive ? 2.5 : 2}
-                      className={cn(
-                        "transition-all duration-300",
-                        isActive && "drop-shadow-[0_0_10px_rgba(16,185,129,0.6)]"
-                      )}
+                      size={20}
+                      strokeWidth={isActive ? 2.2 : 1.75}
+                      className="transition-all duration-200"
                     />
                   </motion.div>
                   <span
                     className={cn(
-                      "text-[10px] font-semibold tracking-wide transition-all duration-300 relative z-10",
-                      isActive ? "opacity-100 text-brand-primary" : "opacity-70"
+                      "text-[10px] font-medium tracking-tight transition-all duration-200 relative z-10",
+                      isActive ? "opacity-100 text-zinc-100" : "opacity-65"
                     )}
                   >
                     {item.label}

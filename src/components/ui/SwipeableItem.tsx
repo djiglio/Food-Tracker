@@ -90,7 +90,7 @@ export const SwipeableItem = forwardRef<SwipeableItemRef, SwipeableItemProps>(({
         dragElastic={0.1}
         onDragEnd={handleDragEnd}
         style={{ x }}
-        className="relative z-10 w-full bg-zinc-950 rounded-2xl border border-zinc-800/80 shadow-md group-active:scale-[0.98] transition-transform" 
+        className="relative z-10 w-full bg-[#121215] rounded-2xl border border-white/[0.06] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)] group-active:scale-[0.99] transition-transform" 
       >
         {children}
       </motion.div>
