@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/Input';
 import { Clock, Database, Share, SlidersHorizontal, ChevronRight, Cloud, LogOut, Edit2, ArrowUp, ArrowDown, Trash2, Plus, AlertTriangle, Check, X } from 'lucide-react';
 import { exportAllData } from '@/core/export';
 import { loginWithGoogle, logoutGoogle, auth } from '@/services/firebase';
-import { MealTargetConfig } from '@/core/metabolism';
+import { MealTargetConfig, getMacroTargetForDate } from '@/core/metabolism';
 import { cn } from '@/core/utils';
 
 export const ProfileDashboard: React.FC = () => {
@@ -29,7 +29,8 @@ export const ProfileDashboard: React.FC = () => {
     return <Navigate to="/onboarding" replace />;
   }
 
-  const today = new Date().toISOString().split('T')[0];
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
   const activeTarget = getActiveTarget(today);
 
   if (!activeTarget) {
@@ -41,7 +42,8 @@ export const ProfileDashboard: React.FC = () => {
     navigate('/onboarding');
   };
 
-  const { dailyTarget, meals, goal } = activeTarget;
+  const { meals, goal } = activeTarget;
+  const dailyTarget = getMacroTargetForDate(activeTarget, today);
 
   const startEditingMeals = () => {
     setDraftMeals(

@@ -23,7 +23,9 @@ export const MacroCyclingDashboard: React.FC = () => {
   const getActiveTarget = useUserStore(state => state.getActiveTarget);
   const addTargetVersion = useUserStore(state => state.addTargetVersion);
   
-  const today = new Date().toISOString().split('T')[0];
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  const todayDayIndex = now.getDay();
   const activeTarget = getActiveTarget(today);
 
   // Se per qualche motivo non c'è un target, torna indietro
@@ -51,37 +53,46 @@ export const MacroCyclingDashboard: React.FC = () => {
     setEditingDay(dayIndex);
   };
 
-  const saveEditing = () => {
-    if (editingDay === null) return;
-    
+  const buildDraftTarget = (): DailyMacroTarget => {
     const pro = Number(draftMacros.pro) || 0;
     const carbs = Number(draftMacros.carbs) || 0;
     const fat = Number(draftMacros.fat) || 0;
-    
-    // Calcolo Kcal matematico dai grammi
     const kcal = Math.round((pro * 4) + (carbs * 4) + (fat * 9));
-    
+    return { kcal, proteinG: pro, carbsG: carbs, fatG: fat };
+  };
+
+  const saveEditing = () => {
+    if (editingDay === null) return;
+    const updated = buildDraftTarget();
     setCyclingTargets(prev => ({
       ...prev,
-      [editingDay]: {
-        kcal,
-        proteinG: pro,
-        carbsG: carbs,
-        fatG: fat
-      }
+      [editingDay]: updated
     }));
-    
     setEditingDay(null);
   };
 
   const handleSave = () => {
+    // Se l'utente ha un giorno aperto in modifica e preme direttamente "Salva configurazione",
+    // includiamo automaticamente le modifiche in corso
+    const finalCyclingTargets: Record<number, DailyMacroTarget> = { ...cyclingTargets };
+    if (editingDay !== null) {
+      finalCyclingTargets[editingDay] = buildDraftTarget();
+    }
+
+    const configuredDays = Object.values(finalCyclingTargets);
+    const updatedDailyTarget =
+      isEnabled && configuredDays.length > 0
+        ? finalCyclingTargets[todayDayIndex] || configuredDays[0]
+        : activeTarget.dailyTarget;
+
     // Creiamo un nuovo TargetVersion per storicizzare la modifica
     const newTarget = {
       ...activeTarget,
       id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
       effectiveFromDate: today,
+      dailyTarget: updatedDailyTarget,
       isMacroCyclingEnabled: isEnabled,
-      cyclingTargets: isEnabled ? cyclingTargets : undefined
+      cyclingTargets: isEnabled ? finalCyclingTargets : undefined
     };
 
     addTargetVersion(newTarget);

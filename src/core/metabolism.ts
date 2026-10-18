@@ -118,9 +118,18 @@ export function getDefaultMeals(): MealTargetConfig[] {
  */
 export function getMacroTargetForDate(target: TargetVersion, dateStr: string): DailyMacroTarget {
   if (target.isMacroCyclingEnabled && target.cyclingTargets) {
-    const dayOfWeek = new Date(dateStr).getDay();
-    // Se non è stato impostato per quel giorno, falliamo al default
-    return target.cyclingTargets[dayOfWeek] || target.dailyTarget;
+    const parts = dateStr.split('-').map(Number);
+    const dayOfWeek =
+      parts.length === 3
+        ? new Date(parts[0], parts[1] - 1, parts[2]).getDay()
+        : new Date(dateStr).getDay();
+    if (target.cyclingTargets[dayOfWeek]) {
+      return target.cyclingTargets[dayOfWeek];
+    }
+    const configuredDays = Object.values(target.cyclingTargets);
+    if (configuredDays.length > 0) {
+      return configuredDays[0];
+    }
   }
   return target.dailyTarget;
 }
