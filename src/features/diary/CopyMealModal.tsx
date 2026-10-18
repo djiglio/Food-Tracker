@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { Button } from '@/components/ui/Button';
 import { X, Copy, Calendar } from 'lucide-react';
 import { getDayRecord } from '@/services/db';
+import { useUserStore } from '@/store/userStore';
 
 interface CopyMealModalProps {
   isOpen: boolean;
@@ -12,8 +13,9 @@ interface CopyMealModalProps {
   onConfirmCopy: (sourceDate: string, sourceMealId: string) => Promise<void>;
 }
 
-const MEAL_NAMES: Record<string, string> = {
+const FALLBACK_MEAL_NAMES: Record<string, string> = {
   breakfast: 'Colazione',
+  snack: 'Spuntino',
   snack1: 'Spuntino 1',
   lunch: 'Pranzo',
   snack2: 'Spuntino 2',
@@ -33,6 +35,9 @@ const generateRecentDays = (count = 14) => {
 export const CopyMealModal: React.FC<CopyMealModalProps> = ({ 
   isOpen, onClose, targetMealId, targetMealName, onConfirmCopy 
 }) => {
+  const getActiveTarget = useUserStore((state) => state.getActiveTarget);
+  const targetHistory = useUserStore((state) => state.targetHistory);
+
   const [sourceDate, setSourceDate] = useState(() => {
     const d = new Date();
     d.setDate(d.getDate() - 1); // Di default, cerca di clonare da ieri
@@ -45,6 +50,28 @@ export const CopyMealModal: React.FC<CopyMealModalProps> = ({
   const [selectedMealId, setSelectedMealId] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
 
+  const resolveMealName = (mealId: string, date: string): string => {
+    // 1. Cerca nel target attivo di oggi (per usare i nomi più aggiornati scelti dall'utente)
+    const todayStr = new Date().toISOString().split('T')[0];
+    const currentTarget = getActiveTarget(todayStr);
+    const inCurrent = currentTarget?.meals.find((m) => m.id === mealId);
+    if (inCurrent) return inCurrent.name;
+
+    // 2. Cerca nel target attivo della data sorgente
+    const dateTarget = getActiveTarget(date);
+    const inDateTarget = dateTarget?.meals.find((m) => m.id === mealId);
+    if (inDateTarget) return inDateTarget.name;
+
+    // 3. Cerca in tutto lo storico dei target (dal più recente al più vecchio)
+    for (let i = targetHistory.length - 1; i >= 0; i--) {
+      const found = targetHistory[i].meals.find((m) => m.id === mealId);
+      if (found) return found.name;
+    }
+
+    // 4. Fallback
+    return FALLBACK_MEAL_NAMES[mealId] || mealId;
+  };
+
   // Fetch dei pasti della data selezionata
   const handleDateChange = async (date: string) => {
     setSourceDate(date);
@@ -52,14 +79,24 @@ export const CopyMealModal: React.FC<CopyMealModalProps> = ({
     try {
       const record = await getDayRecord(date);
       if (record && record.meals) {
-        // Estrapola solo i pasti che contengono elementi
+        const todayStr = new Date().toISOString().split('T')[0];
+        const referenceMeals = getActiveTarget(todayStr)?.meals || getActiveTarget(date)?.meals || [];
+        const orderMap = new Map(referenceMeals.map((m, idx) => [m.id, idx]));
+
+        // Estrapola solo i pasti che contengono elementi e ordinali secondo la configurazione utente
         const meals = Object.entries(record.meals)
           .filter(([_, mealData]) => mealData.items.length > 0)
           .map(([id, mealData]) => ({
             id,
-            name: MEAL_NAMES[id] || id, // Usa il mapping in italiano
+            name: resolveMealName(id, date),
             itemCount: mealData.items.length
-          }));
+          }))
+          .sort((a, b) => {
+            const orderA = orderMap.has(a.id) ? orderMap.get(a.id)! : 999;
+            const orderB = orderMap.has(b.id) ? orderMap.get(b.id)! : 999;
+            return orderA - orderB;
+          });
+
         setAvailableMeals(meals);
         
         // Se c'è lo stesso pasto nel giorno sorgente, lo pre-seleziona in automatico
@@ -86,7 +123,7 @@ export const CopyMealModal: React.FC<CopyMealModalProps> = ({
     if (isOpen) {
       handleDateChange(sourceDate);
     }
-  }, [isOpen]);
+  }, [isOpen, targetHistory]);
 
   if (!isOpen) return null;
 
