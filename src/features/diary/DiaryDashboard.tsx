@@ -239,26 +239,26 @@ export const DiaryDashboard: React.FC = () => {
             return (
               <Card key={mealConfig.id}>
                 <CardContent className="p-0">
-                  {/* Header Pasto con Macro Pills neutre e Azioni Integrate */}
-                  <div className="px-4 py-3.5 flex justify-between items-center border-b border-white/[0.05] bg-[#161619]/60">
+                  {/* Header Pasto con Macro Pills neutre e Azioni Integrate - superficie leggermente più chiara per distinguere i riquadri */}
+                  <div className="px-4 py-3.5 flex justify-between items-center border-b border-white/[0.07] bg-[#1f1f27]">
                     <div className="space-y-1.5 min-w-0 pr-2">
                       <div className="flex items-baseline gap-2">
                         <h3 className="font-semibold text-[16px] tracking-tight text-zinc-100 truncate">{mealConfig.name}</h3>
-                        <span className="text-[12px] text-zinc-500 font-medium tabular-nums shrink-0">
+                        <span className="text-[12px] text-zinc-400 font-medium tabular-nums shrink-0">
                           {Math.round(mealKcal)} / {mealTargetKcal} kcal
                         </span>
                       </div>
                       {/* Macro Pills sobrie con micro-pallini colorati */}
                       <div className="flex flex-wrap items-center gap-1.5 tabular-nums">
-                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-medium bg-[#09090b]/60 text-zinc-300 border border-white/[0.05]">
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-medium bg-[#121216]/80 text-zinc-300 border border-white/[0.06]">
                           <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
                           {Math.round(mealPro)}g P
                         </span>
-                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-medium bg-[#09090b]/60 text-zinc-300 border border-white/[0.05]">
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-medium bg-[#121216]/80 text-zinc-300 border border-white/[0.06]">
                           <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
                           {Math.round(mealCarb)}g C
                         </span>
-                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-medium bg-[#09090b]/60 text-zinc-300 border border-white/[0.05]">
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-medium bg-[#121216]/80 text-zinc-300 border border-white/[0.06]">
                           <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
                           {Math.round(mealFat)}g F
                         </span>
@@ -275,7 +275,7 @@ export const DiaryDashboard: React.FC = () => {
                           setCopyTargetMeal({ id: mealConfig.id, name: mealConfig.name });
                           setCopyModalOpen(true);
                         }}
-                        className="w-8 h-8 rounded-full bg-zinc-800/70 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-100 border border-white/[0.06] flex items-center justify-center active:scale-95 transition-all"
+                        className="w-8 h-8 rounded-full bg-white/[0.08] hover:bg-white/[0.14] text-zinc-300 hover:text-white border border-white/[0.08] flex items-center justify-center active:scale-95 transition-all"
                       >
                         <Copy size={14} strokeWidth={1.75} />
                       </button>
