@@ -216,8 +216,8 @@ export const DiaryDashboard: React.FC = () => {
               />
               <MacroColumn
                 label="Grassi"
-                dotColor="bg-rose-400"
-                barColor="bg-rose-400"
+                dotColor="bg-emerald-400"
+                barColor="bg-emerald-400"
                 consumed={consumedFat}
                 target={dailyTarget.fatG}
               />
@@ -259,7 +259,7 @@ export const DiaryDashboard: React.FC = () => {
                           {Math.round(mealCarb)}g C
                         </span>
                         <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-medium bg-[#121216]/80 text-zinc-300 border border-white/[0.06]">
-                          <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                           {Math.round(mealFat)}g F
                         </span>
                       </div>

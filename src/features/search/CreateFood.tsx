@@ -121,7 +121,7 @@ export const CreateFood: React.FC<CreateFoodProps> = ({ onBack, onFoodCreated, p
                 {[
                   { label: 'Proteine', dot: 'bg-indigo-400', val: pro, setter: setPro },
                   { label: 'Carbo', dot: 'bg-amber-400', val: carbs, setter: setCarbs },
-                  { label: 'Grassi', dot: 'bg-rose-400', val: fat, setter: setFat },
+                  { label: 'Grassi', dot: 'bg-emerald-400', val: fat, setter: setFat },
                 ].map((m) => (
                   <div key={m.label} className="p-2.5 rounded-xl bg-[#18181c] border border-white/[0.06] space-y-1.5">
                     <div className="flex items-center gap-1.5">

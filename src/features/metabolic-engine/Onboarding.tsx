@@ -440,7 +440,7 @@ export const Onboarding: React.FC = () => {
                         {
                           key: 'fat' as const,
                           label: 'Grassi',
-                          dot: 'bg-rose-400',
+                          dot: 'bg-emerald-400',
                           perc: macroPerc.fat,
                           grams: Math.round((targetKcal * (macroPerc.fat / 100)) / 9),
                         },

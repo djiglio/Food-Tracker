@@ -202,7 +202,7 @@ export const MacroCyclingDashboard: React.FC = () => {
                               {target.carbsG}g
                             </span>
                             <span className="inline-flex items-center gap-1">
-                              <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                               {target.fatG}g
                             </span>
                           </div>
@@ -230,7 +230,7 @@ export const MacroCyclingDashboard: React.FC = () => {
                             {
                               key: 'fat' as const,
                               label: 'Grassi',
-                              dot: 'bg-rose-400',
+                              dot: 'bg-emerald-400',
                               val: draftMacros.fat,
                             },
                           ].map((m) => (

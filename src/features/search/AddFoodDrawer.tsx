@@ -146,7 +146,7 @@ export const AddFoodDrawer: React.FC<AddFoodDrawerProps> = ({ food, targetMealId
             </div>
             <div className="bg-[#121215] border border-white/[0.05] rounded-xl p-2.5">
               <div className="flex items-center gap-1.5 mb-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                 <span className="text-xs text-zinc-400 font-medium">Grassi</span>
               </div>
               <div className="text-sm font-semibold text-zinc-100">{Math.round(currentFat * 10) / 10}g</div>

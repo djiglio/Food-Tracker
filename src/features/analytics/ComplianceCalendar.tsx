@@ -168,8 +168,8 @@ export const ComplianceCalendar: React.FC<ComplianceCalendarProps> = ({
           consumed: Math.round(summary.consumedFat),
           target: targetMacros.fatG,
           perc: fatPerc,
-          dotColor: 'bg-rose-400',
-          barColor: 'bg-rose-400',
+          dotColor: 'bg-emerald-400',
+          barColor: 'bg-emerald-400',
         },
       ],
     };

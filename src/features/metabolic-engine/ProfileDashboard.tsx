@@ -128,7 +128,7 @@ export const ProfileDashboard: React.FC = () => {
       label: 'Grassi',
       grams: dailyTarget.fatG,
       perc: Math.round(((dailyTarget.fatG * 9) / dailyTarget.kcal) * 100),
-      dotColor: 'bg-rose-400',
+      dotColor: 'bg-emerald-400',
     },
   ];
 

@@ -290,7 +290,7 @@ export const CreateRecipe: React.FC<CreateRecipeProps> = ({ onBack, onRecipeCrea
             </div>
             <div>
               <div className="flex items-center gap-1 mb-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                 <span className="text-xs text-zinc-400 font-medium">Grassi</span>
               </div>
               <div className="text-sm font-semibold text-zinc-100">{Math.round(fatPer100 * 10) / 10 || 0}g</div>
